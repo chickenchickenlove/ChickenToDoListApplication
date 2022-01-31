@@ -4,6 +4,17 @@
 - 본인의 ToDo List를 다른 사람과 공유해서 일정을 나누는 것도 가능합니다.  
 
 
+# ChickenToDoListApplication
+- ThymeLeaf
+- Lombok
+- Spring Web
+- Validation
+- Spring Data JPA
+- H2 Database
+- QueryDSL
+- p6spy
+
+
 # 22.01.31
 - Member - Article Table 관계 개발(Many To Many → 중간 테이블 Member Article Table 생성)
 . 회원이 본인의 ToDoList만 보는 기능이라면 두 테이블의 관계는 One To Many
