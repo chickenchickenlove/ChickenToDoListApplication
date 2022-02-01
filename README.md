@@ -33,3 +33,9 @@
 - Home Controller / Member Controller 개발
 . Home Controller 개발
 . Member Controller 개발 (회원 가입 GetMapping + PostMapping)으로 가입 가능하도록 설정. 
+
+
+# 22.02.01
+- @Aspect 구현
+- 로그 추적기, 사용 시간 추적기, 조회수 추적기용 
+- 
