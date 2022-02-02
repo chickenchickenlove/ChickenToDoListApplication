@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,7 +24,7 @@ class ArticleTest {
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
 
         //when
-        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents);
+        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents, LocalDate.now());
 
         //then
         log.info("created Article = {} ", article.toString());

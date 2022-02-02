@@ -11,6 +11,7 @@ import todo.application.domain.Member;
 import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +35,7 @@ class ArticleServiceTest {
 
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents);
+        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents, LocalDate.now());
         Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
 
         em.persist(newMember);
@@ -43,7 +44,7 @@ class ArticleServiceTest {
         em.clear();
 
 
-        articleService.saveNewArticle(myTitle, myContents, newMember.getId());
+        articleService.saveNewArticle(myTitle, myContents, LocalDate.now(),newMember.getId());
     }
 
 
@@ -53,7 +54,7 @@ class ArticleServiceTest {
 
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents);
+        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents, LocalDate.now());
         Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
 
 
@@ -62,7 +63,7 @@ class ArticleServiceTest {
         em.flush();
         em.clear();
 
-        Long articleNumber = articleService.saveNewArticle(myTitle, myContents, newMember.getId());
+        Long articleNumber = articleService.saveNewArticle(myTitle, myContents, LocalDate.now(),newMember.getId());
 
 
         log.info("here??????????");

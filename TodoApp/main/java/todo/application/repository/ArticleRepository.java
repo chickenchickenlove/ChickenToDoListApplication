@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import todo.application.domain.Article;
+import todo.application.domain.MemberArticle;
 import todo.application.domain.QArticle;
+import todo.application.domain.QMemberArticle;
 
 import javax.persistence.EntityManager;
 import javax.swing.text.html.parser.Entity;
@@ -13,6 +15,7 @@ import javax.swing.text.html.parser.Entity;
 import java.util.List;
 
 import static todo.application.domain.QArticle.*;
+import static todo.application.domain.QMemberArticle.*;
 
 @Repository
 @Slf4j
@@ -39,6 +42,14 @@ public class ArticleRepository {
 
     public Article findArticleById(Long id) {
         return em.find(Article.class, id);
+    }
+
+
+    public List<MemberArticle> findArticleByMemberId(Long memberId) {
+        return queryFactory.selectFrom(memberArticle)
+                .leftJoin(memberArticle.article, article).fetchJoin()
+                .where(memberArticle.member.id.eq(memberId))
+                .fetch();
     }
 
 

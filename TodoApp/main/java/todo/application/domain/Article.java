@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,6 +31,7 @@ public class Article {
     // 작성 내용
     // 공유 대상
     private String writer;
+    private LocalDate dueDate;
     private LocalDateTime createdTime;
     private LocalDateTime updatedTime;
     private String writeTitle;
@@ -38,7 +40,7 @@ public class Article {
 
     //== 생성 메서드==//
 
-    public static Article createArticle(LocalDateTime createdTime, String writeTitle, String writeContents) {
+    public static Article createArticle(LocalDateTime createdTime, String writeTitle, String writeContents, LocalDate dueDate) {
 
         Article article = new Article();
 
@@ -46,6 +48,7 @@ public class Article {
         article.updatedTime = createdTime;
         article.writeTitle = writeTitle;
         article.writeContents = writeContents;
+        article.dueDate = dueDate;
 
         return article;
     }
