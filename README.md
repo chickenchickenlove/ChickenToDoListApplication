@@ -38,4 +38,15 @@
 # 22.02.01
 - @Aspect 구현
 - 로그 추적기, 사용 시간 추적기, 조회수 추적기용 
-- 
+
+
+# 22.02.02
+- @Aspect를 이용한 사용 시간 추적기 구현 및 적용 완료
+- MemberController Validation 기능 추가(비밀번호 반복 Validation 기능 추가) 
+- MemberController Validation 기능 추가(중복 E-Mail, 중복 닉네임, 중복 ID 가입 불가능 기능 개발)
+- Spring Interceptor 이용한 로그인 인터셉터 기능 개발(사용 로그인 세션은 JSessionId) 
+- MemberArticleController 기능 구현(ToDo 리스트 작성 기능 추가 및 저장, ToDo 리스트 전체 조회 기능 추가, ToDoList 기능 자세한 내용 확인 기능 개발, TodoList 수정 기능 개발 구현)
+- String → LocalDate 타입 컨버터 구현하여 ThymeLeaf String 값을 LocalDate로 변경하여 저장 가능 기능 구현
+- MemberArticle의 Compartor 구현하여, ToDoList 긴급 순서대로 정렬하는 기능 추가 개발
+
+
