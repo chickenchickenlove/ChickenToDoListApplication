@@ -57,3 +57,5 @@
 - HttpServletRequest Session을 이용해, 현재 로그인 정보 제공하여 Thymeleaft View Template에 렌더링 가능하도록 구현.
 - To Do List EditForm Validation 로직 개발
 - MemberArticleController 추가 개발(ToDoList 삭제, ToDoList 완료 처리, ToDoList 공유처리)
+- HashMap을 이용한 회원 가입 동시성 문제 개선위한 Validation 테스트 코드 작성. 
+- (정리) 타임리프 상대경로 / 절대경로 내용 정리
