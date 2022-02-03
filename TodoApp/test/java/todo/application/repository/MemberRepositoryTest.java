@@ -13,7 +13,6 @@ import todo.application.domain.Member;
 import javax.persistence.EntityManager;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,10 +56,10 @@ class MemberRepositoryTest {
         em.clear();
 
         //given
-        List<Member> memberByJoinId = memberRepository.findMemberByJoinId("abcd");
+        Member memberByJoinId = memberRepository.findMemberByJoinId("abcd");
 
         // when
-        Assertions.assertThat(memberByJoinId.get(0).getJoinId()).isEqualTo("abcd");
+        Assertions.assertThat(memberByJoinId.getJoinId()).isEqualTo("abcd");
     }
 
     @Test
@@ -76,11 +75,11 @@ class MemberRepositoryTest {
         em.clear();
 
         //given
-        List<Member> memberByJoinId = memberRepository.findMemberByJoinId("qweqweqweqwe");
+        Member memberByJoinId = memberRepository.findMemberByJoinId("qweqweqweqwe");
 
         // when
         assertThrows(NullPointerException.class, () -> {
-            memberByJoinId.get(0).getJoinId();
+            memberByJoinId.getJoinId();
         });
     }
 

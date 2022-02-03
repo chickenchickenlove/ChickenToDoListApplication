@@ -13,7 +13,6 @@ import todo.application.domain.MemberArticle;
 import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,14 +44,15 @@ class MemberServiceTest {
         em.flush();
         em.clear();
 
+
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        articleService.saveNewArticle(myContents, myTitle, LocalDate.now(),newMember.getId());
+        articleService.saveNewArticle(myContents, myTitle, newMember.getId());
 
 
         String myTitle2 = "오늘의명언2";
         String myContents2 = "안녕하세요2 \n" + "안녕할까요2? \n" + "안녕합니다2.";
-        articleService.saveNewArticle(myContents2, myTitle2,LocalDate.now() ,newMember.getId());
+        articleService.saveNewArticle(myContents2, myTitle2, newMember.getId());
 
     }
 

@@ -10,10 +10,7 @@ import todo.application.domain.MemberArticle;
 import todo.application.repository.ArticleRepository;
 import todo.application.repository.MemberRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 @Transactional
@@ -25,19 +22,19 @@ public class ArticleService {
     private final MemberRepository memberRepository;
 
 
-    //TODO : TODO LIST 공유
-    
-
     // 새로운 글 저장
     @Transactional(readOnly = false)
-    public Long saveNewArticle(String writeContents, String writeTitle, LocalDate dueDate, Long memberId) {
+    public Long saveNewArticle(String writeContents, String writeTitle, Long memberId) {
 
         Member findMember = memberRepository.findMemberById(memberId);
-        Article article = Article.createArticle(LocalDateTime.now(), writeTitle, writeContents, dueDate);
+        Article article = Article.createArticle(LocalDateTime.now(), writeTitle, writeContents);
 
         MemberArticle memberArticle = new MemberArticle();
         memberArticle.addMemberArticle(findMember, article);
+
+
         articleRepository.saveArticle(article);
+
 
         return article.getId();
     }
@@ -55,17 +52,6 @@ public class ArticleService {
     }
 
 
-    public List<MemberArticle> findArticleByMemberId(Long memberId){
-        List<MemberArticle> articleByMemberId = articleRepository.findArticleByMemberId(memberId);
-
-        Collections.sort(articleByMemberId);
-
-        return articleByMemberId;
-    }
-
-    public Article findArticleByArticleId(Long articleId){
-        return articleRepository.findArticleById(articleId);
-    }
 
 
 }

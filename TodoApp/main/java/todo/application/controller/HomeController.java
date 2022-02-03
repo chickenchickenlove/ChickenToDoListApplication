@@ -6,31 +6,29 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import todo.application.controller.form.LoginForm;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import static todo.application.controller.LoginChar.*;
-
 @Controller
 @Slf4j
 public class HomeController {
 
     @RequestMapping("/")
-    public String home(HttpServletRequest request) {
-
-        HttpSession session = request.getSession();
-        if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            return "home";
-        }
-
-        return "loginOkHome";
+    public String home() {
+        log.info("home Controller");
+        return "home";
     }
 
+    @GetMapping("/login")
+    public String loginHome(Model model) {
+        model.addAttribute("loginForm", new LoginForm());
+        log.info("Login Home");
+        return "login";
+    }
 
-    @RequestMapping("/hh")
-    public String homeTest(HttpServletRequest request) {
+    @PostMapping("/login")
+    public String loginHome(@ModelAttribute(name = "loginForm") LoginForm form, Model model) {
+        log.info("Login form start");
+        System.out.println("form = " + form.toString());
 
-        return "home15";
+        return "redirect:/";
     }
 
 

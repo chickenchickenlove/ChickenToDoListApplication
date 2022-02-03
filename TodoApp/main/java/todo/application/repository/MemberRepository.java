@@ -4,7 +4,6 @@ import com.querydsl.core.QueryFactory;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.stereotype.Repository;
@@ -27,28 +26,19 @@ public class MemberRepository {
 
     // 저장 로직
     public Long saveMember(Member member) {
-        //TODO 회원 가입, 중복 ID 가입 불가능
         em.persist(member);
         return member.getId();
     }
-
-
 
     //== 조회 로직==//
     public List<Member> findAllMember() {
         return queryFactory.selectFrom(member).fetch();
     }
 
-    public List<Member> findMemberByJoinId(String JoinId) {
-        return queryFactory.selectFrom(member).where(getUserIdQuery(JoinId)).fetch();
-
-    }
-
-    public Member findMemberByJoinIdOneMan(String JoinId) {
+    public Member findMemberByJoinId(String JoinId) {
         return queryFactory.selectFrom(member).where(getUserIdQuery(JoinId)).fetchOne();
 
     }
-
 
     public Member findMemberById(Long id) {
         return em.find(Member.class, id);
@@ -59,21 +49,6 @@ public class MemberRepository {
                 .join(memberArticle.member)
                 .where(memberArticle.member.id.eq(memberId)).fetch();
     }
-
-
-
-    public List<Member> findMemberByNickname(String nickname) {
-        return queryFactory.selectFrom(member)
-                .where(member.nickname.eq(nickname)).fetch();
-    }
-
-
-    public List<Member> findMemberByEmail(String email) {
-        return queryFactory.selectFrom(member)
-                .where(member.email.eq(email)).fetch();
-    }
-
-
 
 
 
