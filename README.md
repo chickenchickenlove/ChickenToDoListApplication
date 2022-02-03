@@ -50,3 +50,10 @@
 - MemberArticle의 Compartor 구현하여, ToDoList 긴급 순서대로 정렬하는 기능 추가 개발
 
 
+# 22.02.03
+- BootStrap 적용한 ThymeLeaf의 View Template 전체 변경 실행 (V2 Version으로 변경 및 V1 삭제)
+- To Do List 공유 기능 구현(회원 기능 검색 + Validation + MemberArticle Entity 생성으로 구현)
+- LocalDateTime Type Converter 기능 개발 및 ThymeLeaf View Template 적용
+- HttpServletRequest Session을 이용해, 현재 로그인 정보 제공하여 Thymeleaft View Template에 렌더링 가능하도록 구현.
+- To Do List EditForm Validation 로직 개발
+- MemberArticleController 추가 개발(ToDoList 삭제, ToDoList 완료 처리, ToDoList 공유처리)
