@@ -59,3 +59,7 @@
 - MemberArticleController 추가 개발(ToDoList 삭제, ToDoList 완료 처리, ToDoList 공유처리)
 - HashMap을 이용한 회원 가입 동시성 문제 개선위한 Validation 테스트 코드 작성. 
 - (정리) 타임리프 상대경로 / 절대경로 내용 정리
+
+# 22.02.04
+- 회원 ID, 별명 HashMap을 동시성 해결 코드 문제 확인 → 삭제 처리
+- 회원 ID, 별명 Unique Value 적용 및 동시성 해결 코드 위에 JPA 낙관적 Lock 설정(@Version)
