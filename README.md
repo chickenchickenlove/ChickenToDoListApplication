@@ -63,3 +63,6 @@
 # 22.02.04
 - 회원 ID, 별명 HashMap을 동시성 해결 코드 문제 확인 → 삭제 처리
 - 회원 ID, 별명 Unique Value 적용 및 동시성 해결 코드 위에 JPA 낙관적 Lock 설정(@Version)
+
+# 22.02.05
+- 회원, 게시글 테이블 수동 createdTime, UpdatedTime 삭제 → Base Entity 도입 + @PrePersist, @PreUpdate 기능 도입으로 자동화
