@@ -3,6 +3,7 @@ package todo.application.controller.form;
 import lombok.Data;
 import lombok.ToString;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -11,7 +12,9 @@ import java.time.LocalDateTime;
 @ToString
 public class ArticleForm {
 
+    @NotEmpty
     private String writeTitle;
+    @NotEmpty
     private String writeContents;
     private LocalDate dueDate;
 

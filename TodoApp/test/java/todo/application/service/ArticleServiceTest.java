@@ -11,6 +11,7 @@ import todo.application.domain.Member;
 import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,8 +35,8 @@ class ArticleServiceTest {
 
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents);
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
+        Article article = Article.createArticle(myTitle, myContents, LocalDate.now());
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
 
         em.persist(newMember);
 
@@ -43,7 +44,7 @@ class ArticleServiceTest {
         em.clear();
 
 
-        articleService.saveNewArticle(myTitle, myContents, newMember.getId());
+        articleService.saveNewArticle(myTitle, myContents, LocalDate.now(),newMember.getId());
     }
 
 
@@ -53,8 +54,8 @@ class ArticleServiceTest {
 
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Article article = Article.createArticle(LocalDateTime.now(), myTitle, myContents);
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
+        Article article = Article.createArticle(myTitle, myContents, LocalDate.now());
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
 
 
         em.persist(newMember);
@@ -62,7 +63,7 @@ class ArticleServiceTest {
         em.flush();
         em.clear();
 
-        Long articleNumber = articleService.saveNewArticle(myTitle, myContents, newMember.getId());
+        Long articleNumber = articleService.saveNewArticle(myTitle, myContents, LocalDate.now(),newMember.getId());
 
 
         log.info("here??????????");
@@ -71,7 +72,7 @@ class ArticleServiceTest {
         String editTitle = "수정용";
         String editContents = "수정을 해볼까요?";
 
-        articleService.editNewArticle(articleNumber, editTitle, editContents);
+//        articleService.editNewArticle(articleNumber, editTitle, editContents, );
         log.info("here???????????????????");
 
     }

@@ -13,6 +13,7 @@ import todo.application.domain.Member;
 import javax.persistence.EntityManager;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,10 +29,30 @@ class MemberRepositoryTest {
     @Autowired
     EntityManager em;
 
+
+    @Test
+    void 중복이름가입_실패해야함() {
+
+
+
+        Member newMember1 = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+        Member newMember2 = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+
+
+        memberRepository.saveMember(newMember1);
+        em.flush();
+        em.clear();
+
+
+        memberRepository.saveMember(newMember2);
+
+
+    }
+
     @Test
     void save_pass() {
         //given
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
 
         //when
         Long saveMemberId = memberRepository.saveMember(newMember);
@@ -49,17 +70,17 @@ class MemberRepositoryTest {
 
         System.out.println("MemberRepositoryTest.findByJoinId");
         // when
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
         Long saveMemberId = memberRepository.saveMember(newMember);
 
         em.flush();
         em.clear();
 
         //given
-        Member memberByJoinId = memberRepository.findMemberByJoinId("abcd");
+        List<Member> memberByJoinId = memberRepository.findMemberByJoinId("abcd");
 
         // when
-        Assertions.assertThat(memberByJoinId.getJoinId()).isEqualTo("abcd");
+        Assertions.assertThat(memberByJoinId.get(0).getJoinId()).isEqualTo("abcd");
     }
 
     @Test
@@ -68,18 +89,18 @@ class MemberRepositoryTest {
 
         System.out.println("MemberRepositoryTest.findByJoinId");
         // when
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
         Long saveMemberId = memberRepository.saveMember(newMember);
 
         em.flush();
         em.clear();
 
         //given
-        Member memberByJoinId = memberRepository.findMemberByJoinId("qweqweqweqwe");
+        List<Member> memberByJoinId = memberRepository.findMemberByJoinId("qweqweqweqwe");
 
         // when
         assertThrows(NullPointerException.class, () -> {
-            memberByJoinId.getJoinId();
+            memberByJoinId.get(0).getJoinId();
         });
     }
 

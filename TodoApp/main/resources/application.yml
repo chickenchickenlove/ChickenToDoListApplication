@@ -16,6 +16,10 @@ spring:
     open-in-view: true
 
   thymeleaf:
+    cache: false
+
+#  devtools:
+#    livereload.enabled: true
 
 
 logging:

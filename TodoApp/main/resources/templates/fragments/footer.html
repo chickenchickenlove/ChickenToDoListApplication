@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<div class="footer" th:fragment="footer">
-    <p>&copy; Hello Shop V2</p>
+<style>
+
+    .myStyle {
+        border-color: #0a58ca;
+        color: #0c63e4;
+    }
+</style>
+
+
+<div class="myStyle" th:fragment="footer">
+    <h2> ChickenChickenLove Todo List </h2>
+
+    <div class="jumbotron">
+        <p>
+            <a class="btn btn-lg btn-secondary" href="/">홈으로</a>
+            <a class="btn btn-lg btn-secondary" href="/logout">로그 아웃</a>
+        </p>
+    </div>
 </div>
 </html>

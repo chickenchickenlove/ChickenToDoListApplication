@@ -4,17 +4,15 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @ToString
 @Getter
 @Setter
-public class Article {
+public class Article extends BaseEntity {
 
     //== 테이블 매칭용 ==//
     @Id
@@ -30,22 +28,29 @@ public class Article {
     // 작성 내용
     // 공유 대상
     private String writer;
-    private LocalDateTime createdTime;
-    private LocalDateTime updatedTime;
+    private LocalDate dueDate;
+//    private LocalDateTime createdTime;
+//    private LocalDateTime updatedTime;
     private String writeTitle;
     private String writeContents;
+
+    @Enumerated(EnumType.STRING)
+    private ArticleStatus status;
+
+    @Version
+    private Long version;
 
 
     //== 생성 메서드==//
 
-    public static Article createArticle(LocalDateTime createdTime, String writeTitle, String writeContents) {
+    public static Article createArticle(String writeTitle, String writeContents, LocalDate dueDate) {
 
         Article article = new Article();
 
-        article.createdTime = createdTime;
-        article.updatedTime = createdTime;
         article.writeTitle = writeTitle;
         article.writeContents = writeContents;
+        article.dueDate = dueDate;
+        article.status = ArticleStatus.ING;
 
         return article;
     }

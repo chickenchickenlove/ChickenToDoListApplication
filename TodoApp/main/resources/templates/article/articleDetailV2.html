@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head th:replace="/fragments/header::header" />
+    <body>
+        <!-- Navigation-->
+        <nav th:replace="fragments/navigationLogin ::nav"/>
+        <!-- Page Header-->
+        <div th:replace="/fragments/bodyHeader :: header"></div>
+        </header>
+        <!-- Main Content-->
+        <main class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <p> 작성된 To Do List의 세부항목이에요!  </p>
+                        <div class="my-5">
+                            <form role="form" action="/article/saveForm" th:object="${article}" method="post">
+                                <div class="form-floating">
+                                    <input type="text" th:style="'background-color: white'" readonly class="form-control" th:field="*{writer}" placeholder="해야할 일을 알려주세요!..."/>
+                                    <label th:for="writer"> 작성자 </label>
+                                    <div th:errors="*{writer}" th:class="fieldError"></div>
+                                </div>
+                                <div class="form-floating">
+                                    <input type="text" readonly th:style="'background-color: white'" class="form-control" th:field="*{updatedTime}" placeholder="언제까지 해야하는지를 알려주세요! "/>
+                                    <label th:for="updatedTime"> Due Date </label>
+                                    <div th:errors="*{updatedTime}" th:class="fieldError"></div>
+                                </div>
+                                <div class="form-floating">
+                                    <input type="text" readonly th:style="'background-color: white'" class="form-control" th:field="*{status}" placeholder="언제까지 해야하는지를 알려주세요! "/>
+                                    <label th:for="status"> Status </label>
+                                    <div th:errors="*{status}" th:class="fieldError"></div>
+                                </div>
+                                <div class="form-floating">
+                                    <textarea class="form-control" readonly th:style="'background-color: white'" th:field="*{writeContents}" placeholder="Enter your message here..." style="height: 12rem"></textarea>
+                                    <label th:for="writeContents">Detail</label>
+                                    <div th:errors="*{writeContents}" th:class="fieldError"></div>
+                                </div>
+                                <br />
+                                <a th:href="@{edit}">
+                                    <div class="btn btn-primary text-uppercase">EDIT!</div>
+                                </a>
+                                <a th:href="@{/article/list}">
+                                    <div class="btn btn-primary text-uppercase">BACK</div>
+                                </a>
+                                <a th:href="|/article/${articleId}/share|">
+                                    <div class="btn btn-primary text-uppercase">Share</div>
+                                </a>
+                                <a th:href="|/article/${articleId}/complete|">
+                                    <div class="btn btn-primary text-uppercase">Complete</div>
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Footer-->
+        <footer th:replace="fragments/footerReal :: footer"></footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script th:src="@{/bootstrap/js/scripts.js}"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>

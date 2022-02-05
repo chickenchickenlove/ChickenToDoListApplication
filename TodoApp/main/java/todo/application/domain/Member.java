@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @ToString
-public class Member {
+public class Member extends BaseEntity{
 
     //== 테이블 매치용 ==//
     @Id
@@ -25,24 +25,26 @@ public class Member {
 
 
     //==  기본 정보 ==//
+    @Column(unique = true)
     private String nickname;
+
+    @Column(unique = true)
     private String joinId;
     private String password;
     private String email;
-    private LocalDateTime joinDate;
 
+    @Version
+    private Long version;
 
     //== 생성 메서드==//
 
-    public static Member createNewMember(String nickname, String joinId, String password, String email, LocalDateTime joinDate) {
+    public static Member createNewMember(String nickname, String joinId, String password, String email) {
 
         Member member = new Member();
         member.nickname = nickname;
         member.joinId = joinId;
         member.password = password;
         member.email = email;
-        member.joinDate = joinDate;
-
         return member;
     }
 

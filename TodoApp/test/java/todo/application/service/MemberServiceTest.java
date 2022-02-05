@@ -1,6 +1,7 @@
 package todo.application.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import todo.application.domain.MemberArticle;
 import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,30 +37,29 @@ class MemberServiceTest {
     EntityManager em;
 
 
-    @BeforeEach
+//    @BeforeEach
     void init() {
 
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
         em.persist(newMember);
 
         em.flush();
         em.clear();
 
-
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        articleService.saveNewArticle(myContents, myTitle, newMember.getId());
+        articleService.saveNewArticle(myContents, myTitle, LocalDate.now(), newMember.getId());
 
 
         String myTitle2 = "오늘의명언2";
         String myContents2 = "안녕하세요2 \n" + "안녕할까요2? \n" + "안녕합니다2.";
-        articleService.saveNewArticle(myContents2, myTitle2, newMember.getId());
+        articleService.saveNewArticle(myContents2, myTitle2, LocalDate.now(), newMember.getId());
 
     }
 
     @Test
     @Rollback(value = false)
-    void findByMember() throws Exception{
+    void findByMember() throws Exception {
 
         log.info("==============================================================");
         log.info("==============find By Member Test Start=======================");
@@ -74,6 +75,42 @@ class MemberServiceTest {
         }
 
 
+    }
+
+    @Test
+    @Rollback(value = false)
+    void 이메일로_아이디찾기_성공() {
+
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+        em.persist(newMember);
+
+        em.flush();
+        em.clear();
+
+        Member findByMember = memberService.findJoinIdByEmail("abcde@naver.com");
+
+        log.info("new Member = {}", System.identityHashCode(newMember));
+        log.info("findByMember = {}", System.identityHashCode(findByMember));
+
+        Assertions.assertThat(newMember).isEqualTo(findByMember);
+    }
+
+
+    @Test
+    @Rollback(value = false)
+    void 이메일로_아이디찾기_실패_NULL발생() {
+
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+        em.persist(newMember);
+
+        Member findByMember = memberService.findJoinIdByEmail("abcde@naver.comdfdf");
+        System.out.println("findByMember = " + findByMember);
+
+        log.info("new Member = {}", findByMember);
+        log.info("findByMember = {}", findByMember);
+
+
+        Assertions.assertThat(findByMember).isNull();
     }
 
 

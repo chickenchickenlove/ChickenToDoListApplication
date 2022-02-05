@@ -4,6 +4,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import todo.application.controller.formatter.LocalDateTimeToStringConverter;
 import todo.application.controller.formatter.StringToDateFormatter;
 import todo.application.controller.interceptor.LoginInterceptor;
 
@@ -15,12 +16,13 @@ public class SpringInterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor())
                 .order(1)
                 .addPathPatterns("/article/**")
-                .excludePathPatterns("/css/**", "/*.ico", "/error");
+                .excludePathPatterns("/css/**", "/*.ico", "/error","/bootstrap/**");
     }
 
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new StringToDateFormatter());
+//        registry.addConverter(new StringToDateFormatter());
+//        registry.addConverter(new LocalDateTimeToStringConverter());
     }
 }

@@ -22,7 +22,7 @@ class MemberTest {
     void test() throws Exception{
 
         // given + when
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com", LocalDateTime.now());
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
 
 
         log.info("member = {}", newMember.toString());
@@ -32,7 +32,6 @@ class MemberTest {
         Assertions.assertThat(newMember.getJoinId()).isEqualTo("abcd");
         Assertions.assertThat(newMember.getPassword()).isEqualTo("abcde");
         Assertions.assertThat(newMember.getEmail()).isEqualTo("abcde@naver.com");
-
     }
 
 
