@@ -66,3 +66,4 @@
 
 # 22.02.05
 - 회원, 게시글 테이블 수동 createdTime, UpdatedTime 삭제 → Base Entity 도입 + @PrePersist, @PreUpdate 기능 도입으로 자동화
+- 테스트 데이터 추가(회원 데이터 및, 게시글 데이터 대용량 추가)
