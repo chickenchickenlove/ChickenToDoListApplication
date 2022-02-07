@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 import todo.application.repository.MemberRepository;
@@ -13,6 +14,8 @@ import todo.application.repository.MemberSearch;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -25,11 +28,25 @@ public class MemberService {
 
 
     //== 비즈니스 로직==//
-    // ID 찾기
 
+    // ID 찾기
     public Member findJoinIdByEmail(String email) {
-        return memberRepository.findMemberByEmail(email);
+        if (StringUtils.hasText(email)) {
+            return memberRepository.findMemberByEmail(email);
+        }
+        return null;
     }
+
+
+    // 비밀번호 찾기
+    public Member findPassword(String email, String joinID) {
+
+        if (StringUtils.hasText(email) && StringUtils.hasText(joinID)) {
+            return memberRepository.findMemberByEmail(email);
+        }
+        return null;
+    }
+
 
 
 
