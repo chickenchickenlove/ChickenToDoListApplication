@@ -72,3 +72,8 @@
 # 22.02.06
 - 게시글 수정, 조회, 공유 기능에 각 컨트롤러에서 보안 확인해서 처리.
 → 이 때, 동일한 로직이 너무 많이 반복되는 것이 확인됨. 게시글 - 회원의 보안 처리 기능을 AOP로 빼서 공통 처리할 수 있는지 검토 중. 
+
+# 22.02.07
+- @MySecurity 어노테이션 개발 + ArticleControllerAop 클래스 개발
+- MemberArticleController → MemberArticleNoSecurityController / MemberArticleSecurityController로 분리 (복잡성 감소)
+- MemberArticleSecurityController로 @MySecurity 기반으로 ArticleControllerAop 보안 적용
