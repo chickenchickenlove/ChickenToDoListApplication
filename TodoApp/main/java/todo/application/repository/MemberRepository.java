@@ -9,14 +9,17 @@ import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.*;
 
 import javax.persistence.EntityManager;
 import javax.swing.text.html.parser.Entity;
 import java.util.List;
+import java.util.Optional;
 
 import static todo.application.domain.QMember.*;
 import static todo.application.domain.QMemberArticle.*;
+
 
 @Repository
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class MemberRepository {
     private final JPAQueryFactory queryFactory;
 
     // 저장 로직
+    @Transactional(readOnly = false)
     public Long saveMember(Member member) {
         //TODO 회원 가입, 중복 ID 가입 불가능
         em.persist(member);
@@ -43,6 +47,12 @@ public class MemberRepository {
 
     public Member findMemberById(Long id) {
         return em.find(Member.class, id);
+    }
+
+    public Member findMemberByEmailAndJoinId(String email, String joinID) {
+        return queryFactory.selectFrom(member)
+                .where(member.email.eq(email).and(member.joinId.eq(joinID)))
+                .fetchOne();
     }
 
 
@@ -65,8 +75,9 @@ public class MemberRepository {
 
     // 유일 조건이기 때문에 Member만 반환한다.
     public Member findMemberByEmail(String email) {
-        return queryFactory.selectFrom(member)
-                .where(member.email.eq(email)).fetchOne();
+        return queryFactory.selectFrom(QMember.member)
+                .where(QMember.member.email.eq(email)).fetchOne();
+
     }
 
 
@@ -127,6 +138,7 @@ public class MemberRepository {
 
         return builder;
     }
+
 
 
 }
