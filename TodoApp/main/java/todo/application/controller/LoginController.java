@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import todo.application.controller.form.LoginForm;
-import todo.application.controller.form.MemberArticleForm;
+import todo.application.controller.form.*;
 import todo.application.domain.Member;
 import todo.application.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @Controller
 @Slf4j
@@ -79,6 +79,78 @@ public class LoginController {
     }
 
 
+    //== ID 찾기 ==//
+    @GetMapping("/forgetid")
+    public String forgetIdForm(Model model) {
+        model.addAttribute("loginForgetIdForm", new LoginForgetIdForm());
+        return "login/loginForgetId";
+    }
+
+
+    @PostMapping("/forgetid")
+    public String forgetIdView(@Valid @ModelAttribute(name = "loginForgetIdForm") LoginForgetIdForm form,
+                               BindingResult bindingResult, Model model) {
+
+        // input Validation
+        if (bindingResult.hasErrors()) {
+            log.info("Binding Result = {}", bindingResult);
+            return "login/loginForgetId";
+        }
+
+
+        // DB Validation
+        Member findMember = memberService.findJoinIdByEmail(form.getEmail());
+        if (findMember == null) {
+            bindingResult.reject("NoSuchEmailId", "가입된 회원이 없습니다.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            log.info("Binding Result = {}", bindingResult);
+            return "login/loginForgetId";
+        }
+
+        form.setJoinId(findMember.getJoinId());
+        return "login/loginForgetIdOk";
+    }
+
+
+
+    //== 비밀번호 찾기 ==//
+    @GetMapping("/forgetpassword")
+    public String forgetPasswordForm(Model model) {
+        model.addAttribute("loginForgetPasswordForm", new LoginForgetPasswordForm());
+        return "login/loginForgetPassword";
+    }
+
+
+    @PostMapping("/forgetpassword")
+    public String forgetPasswordView(@Valid @ModelAttribute(name = "loginForgetPasswordForm") LoginForgetPasswordForm form,
+                               BindingResult bindingResult, Model model) {
+
+        // input Validation
+        if (bindingResult.hasErrors()) {
+            log.info("Binding Result = {}", bindingResult);
+            return "login/loginForgetPassword";
+        }
+
+
+
+        // DB Validation
+        Member findMember = memberService.findPassword(form.getEmail(), form.getJoinId());
+        if (findMember == null) {
+            bindingResult.reject("NoSuchEmailId", "Email과 일치하는 ID가 없습니다.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            log.info("Binding Result = {}", bindingResult);
+            return "login/loginForgetPassword";
+        }
+
+        form.setPassword(findMember.getPassword());
+
+        return "login/loginForgetPasswordOk";
+    }
+
 
 
     //== 비즈니스 로직==//
@@ -112,9 +184,9 @@ public class LoginController {
      */
 
     private void createNewSession(Member findMember, HttpServletRequest request) {
-        MemberArticleForm findMemberArticleForm = new MemberArticleForm(findMember.getId(), findMember.getNickname(), findMember.getJoinId());
+        MemberLoginSessionForm loginMemberForm = new MemberLoginSessionForm(findMember.getId(), findMember.getNickname(), findMember.getJoinId());
         HttpSession loginSession = request.getSession(true);
-        loginSession.setAttribute("loginMember", findMemberArticleForm);
+        loginSession.setAttribute("loginMember", loginMemberForm);
     }
 
 
