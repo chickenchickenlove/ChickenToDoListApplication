@@ -78,4 +78,8 @@
 - @MySecurity 어노테이션 개발 + ArticleControllerAop 클래스 개발
 - MemberArticleController → MemberArticleNoSecurityController / MemberArticleSecurityController로 분리 (복잡성 감소)
 - MemberArticleSecurityController로 @MySecurity 기반으로 ArticleControllerAop 보안 적용
-- ● TODO : 1. ID 찾기 / 비밀번호 찾기 컨트롤러 + 뷰 구현 2. 공유 대상 보여줄 때 페이징 기능 적용 3. 게시글 보여줄 때 페이징 기능 적용 4. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) 4. 잘못된 경로로 들어갔을 때, 에러 페이지로 뷰 랜딩하기 
+- ● TODO : 1. ID 찾기 / 비밀번호 찾기 컨트롤러 + 뷰 구현 2. 공유 대상 보여줄 때 페이징 기능 적용 3. 게시글 보여줄 때 페이징 기능 적용 4. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) 5. 잘못된 경로로 들어갔을 때, 에러 페이지로 뷰 랜딩하기 
+
+# 22.02.08
+- ID 찾기 / 비밀번호 찾기 컨트롤러 + 뷰 구현 완료
+- TODO : 1.공유 대상 보여줄 때 페이징 기능 적용 2. 게시글 보여줄 때 페이징 기능 적용 3. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) 4. 잘못된 경로로 들어갔을 때, 에러 페이지로 뷰 랜딩하기
