@@ -2,6 +2,10 @@ package todo.application.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -46,7 +50,6 @@ public class MemberArticleSecurityController {
 
         return new ModelAndView();
     }
-
 
     @MySecurity
     @GetMapping("/article/{articleId}/detail")
@@ -97,12 +100,12 @@ public class MemberArticleSecurityController {
     @GetMapping("/article/{articleId}/share")
     public String articleShareList(@ModelAttribute(name = "memberSearch") MemberSearch memberSearch,
                                    Model model, @PathVariable(name = "articleId") Long articleId,
-                                   HttpServletRequest request) {
+                                   HttpServletRequest request, Pageable pageable) {
 
-
-        MemberArticle isEditPossibleThisArticleResult = isReadOrEditPossibleThisArticle(request, articleId);
-        List<Member> members = memberService.findMemberByMemberSearch(memberSearch);
+        Slice<Member> members = memberService.findMemberByMemberSearch(memberSearch,pageable);
         model.addAttribute("members", members);
+
+
         return "article/articleShareV2";
     }
 
@@ -160,7 +163,6 @@ public class MemberArticleSecurityController {
 
 
     //== 로그인 ID 찾기==//
-
     private Long getLoginMemberId(HttpServletRequest request) {
         HttpSession session = request.getSession();
         MemberLoginSessionForm loginMember = (MemberLoginSessionForm) session.getAttribute(LOGIN_MEMBER);
