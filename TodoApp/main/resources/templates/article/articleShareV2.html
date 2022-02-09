@@ -22,10 +22,10 @@
                     <label th:for="joinId"> 회원 ID </label>
                     <input type="text" class="form-control" th:field="*{joinId}" placeholder="해야할 일을 알려주세요!..."/>
                 </div>
-                <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">Serach Member!</button>
+                <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">Search Member!</button>
             </form>
         </div>
-        <div th:if="${members!=null}" class="col-md-10 col-lg-8 col-xl-7">
+        <div th:if="${members.getContent()!=null}" class="col-md-10 col-lg-8 col-xl-7">
             <!-- Post preview-->
             <div class="post-preview" th:each="member : ${members}">
 <!--                /article/share/do-->
@@ -35,6 +35,24 @@
                     <h3 class="post-subtitle" th:text="|공유할까요?|"> 기한 </h3>
                 </a>
             </div>
+
+            <a th:if="${members.isFirst()} == false" th:href="@{/article/{articleId}/share(articleId = ${articleId},
+            page = ${members.previousPageable().getPageNumber()},
+            size = ${members.previousPageable().getPageSize()},
+            nickname = ${memberSearch.getNickname()},
+             joinId = ${memberSearch.getJoinId()})}">
+                <div class="btn btn-primary text-uppercase">이전 회원 보기</div>
+            </a>
+
+
+            <a th:if="${members.getNumberOfElements()} >= 20" th:href="@{/article/{articleId}/share(articleId = ${articleId},
+            page = ${members.nextPageable().getPageNumber()},
+            size = ${members.nextPageable().getPageSize()},
+            nickname = ${memberSearch.getNickname()},
+             joinId = ${memberSearch.getJoinId()})}">
+                <div class="btn btn-primary text-uppercase">다음 회원 보기</div>
+            </a>
+
             <!-- Divider-->
             <hr class="my-4" />
         </div>
