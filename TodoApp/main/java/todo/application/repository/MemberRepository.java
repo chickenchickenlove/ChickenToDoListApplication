@@ -7,6 +7,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import todo.application.domain.*;
 
 import javax.persistence.EntityManager;
 import javax.swing.text.html.parser.Entity;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,11 +85,46 @@ public class MemberRepository {
     }
 
 
-    public List<Member> findMemberByMemberSearch(MemberSearch memberSearch) {
-        return queryFactory.selectFrom(member)
-                .where(getNicknameOrUserId(memberSearch))
+    public Slice<Member> findMemberByMemberSearch(MemberSearch memberSearch, Pageable pageable) {
+
+        BooleanBuilder nicknameOrUserId = getNicknameOrUserId(memberSearch);
+
+        if (nicknameOrUserId.getValue() == null) {
+            return new SliceImpl<Member>(new ArrayList<Member>());
+        }
+
+        List<Member> result = queryFactory.selectFrom(member)
+                .where(nicknameOrUserId)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+
+        List<Member> returnList = new ArrayList<>();
+        int limit = pageable.getPageSize();
+
+
+        for (Member member : result) {
+            returnList.add(member);
+            if (--limit == 0) {
+                break;
+            }
+
+        }
+
+
+        return new SliceImpl<Member>(returnList, pageable, hasNextMember(result, pageable));
+
+
     }
+
+
+    private boolean hasNextMember(List<Member> result, Pageable pageable) {
+        return result.size() > pageable.getPageSize() ? true : false;
+    }
+
+
+
 
 
     public List<Member> findMemberByMemberName(String nickname) {
@@ -135,6 +174,7 @@ public class MemberRepository {
         if (getUserIdLikeQuery(memberSearch.getJoinId()) != null) {
             builder.or(getUserIdLikeQuery(memberSearch.getJoinId()));
         }
+
 
         return builder;
     }
