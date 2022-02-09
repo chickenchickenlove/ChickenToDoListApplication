@@ -89,3 +89,5 @@
 # 22.02.09
 - MemberRepository의 MemberSearch로 검색 시, Paging 기능 추가 쿼리 개발
 - MemberRepository의 MemberSearch로 검색 시, Paging 기능 추가 쿼리 개발 → 테스트 코드 작성(Negative 4, Positive 5)
+- MemberRepository의 MemberSearch Paging(이전 보기, 더 보기) 구현을 MemberArticleController, MemberService에 적용
+- TODO : 1. 게시글 보여줄 때 페이징 기능 적용 2. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) 3. 잘못된 경로로 들어갔을 때, 에러 페이지로 뷰 랜딩하기 4. 이미 가지고 있으면 페이징 대상에서 제외한다.
