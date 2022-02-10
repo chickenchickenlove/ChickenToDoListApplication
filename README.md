@@ -100,3 +100,5 @@
 - [신규 기능] ArticleController / MemberArticleNoSecurityController / articleListV2.html → 게시글 리스트 페이징 기능 적용 완료
 - [방어 코드] ArticleRepository / @MemberArticleRepository Slice형에 방어 코드 추가(page.size == 0 체크 로직)
 - [신규 기능] 에러 페이지 랜딩 기능 구현 → @Montoring 어노테이션, ErrorControllAdvice, Error.html 구현
+- [쿼리 개선] 수정 Validation 필요 쿼리 3회 → 2회로 개선(테스트 코드 작성, 컨트롤러 적용 필요)
+-TODO : 1. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) 2. 이미 가지고 있으면 페이징 대상에서 제외한다.
