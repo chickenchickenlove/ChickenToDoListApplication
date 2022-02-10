@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head th:replace="fragments/header :: header">
-<!--    <style>-->
-<!--        .caption{-->
-<!--            border-color: #fd7e14;-->
-<!--        }-->
-<!--    </style>-->
 </head>
 <body>
 <!-- Navigation-->
@@ -19,7 +14,7 @@
 
 
 
-        <div th:if="${memberArticle?.size() == 0 }" class="col-md-10 col-lg-8 col-xl-7">
+        <div th:if="${memberArticle.getNumberOfElements() == 0 }" class="col-md-10 col-lg-8 col-xl-7">
             <p th:text="|${memberNickname}님 안녕하세요!|" th:style="'color: orange'">인사말</p>
             <a th:href="|/article/saveform|">
                 <h2 class="post-title" th:text="|작성된 글이 없어요! |"> 에러 메세지 </h2>
@@ -31,7 +26,6 @@
         <div th:each="article : ${memberArticle}" class="col-md-10 col-lg-8 col-xl-7">
             <!-- Post preview-->
             <div class="post-preview">
-                <p th:text="|${memberNickname}님 안녕하세요!|" th:style="'color: orange'">인사말</p>
                 <a th:href="|/article/${article.getArticle().getId()}/detail|">
                     <h2 class="post-title" th:style="${article.getArticle().getWriter() != memberNickname} ? 'color: blue' : 'color: black'"
                         th:text="${article.getArticle().getWriteTitle()}"> 메인 타이틀 </h2>
@@ -43,8 +37,18 @@
             <hr class="my-4" />
         </div>
         <!-- Pager-->
-        <div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a></div>
-    </div>
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-primary text-uppercase" th:if="${memberArticle.hasPrevious()}"
+               th:href="@{/article/list(
+               page = ${memberArticle.previousPageable().getPageNumber()},
+               size = ${memberArticle.previousPageable().getPageSize()})}">← 이전 회원</a></div>
+        </div>
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-primary text-uppercase" th:if="${memberArticle.hasNext()}"
+               th:href="@{/article/list(
+               page = ${memberArticle.nextPageable().getPageNumber()},
+               size = ${memberArticle.nextPageable().getPageSize()})}">다음 회원 →</a></div>
+        </div>
 </div>
 <div th:replace="fragments/footerReal :: footer">
 
