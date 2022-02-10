@@ -95,5 +95,8 @@
 
 
 # 22.02.10
-- @ArticleRepository → 게시글 리스트 페이징 기능 쿼리 추가 개발(MemberArticle로 불러와 Article로 페이징 처리)
-- @ArticleRepositoryTest → 게시글 리스트 페이징 기능 쿼리 테스트 코드 2회 작성(Positive 2회) 
+- [신규 기능] ArticleRepository → 게시글 리스트 페이징 기능 쿼리 추가 개발(MemberArticle로 불러와 Article로 페이징 처리)
+- [신규 기능] ArticleRepositoryTest → 게시글 리스트 페이징 기능 쿼리 테스트 코드 2회 작성(Positive 2회) 
+- [신규 기능] ArticleController / MemberArticleNoSecurityController / articleListV2.html → 게시글 리스트 페이징 기능 적용 완료
+- [방어 코드] ArticleRepository / @MemberArticleRepository Slice형에 방어 코드 추가(page.size == 0 체크 로직)
+- [신규 기능] 에러 페이지 랜딩 기능 구현 → @Montoring 어노테이션, ErrorControllAdvice, Error.html 구현
