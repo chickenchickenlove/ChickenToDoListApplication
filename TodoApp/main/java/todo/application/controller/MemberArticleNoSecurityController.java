@@ -2,39 +2,35 @@ package todo.application.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import todo.application.controller.controllerexception.annotation.Monitoring;
 import todo.application.controller.form.ArticleForm;
-import todo.application.controller.form.MemberArticleForm;
 import todo.application.controller.form.MemberLoginSessionForm;
-import todo.application.domain.Article;
-import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
-import todo.application.repository.MemberSearch;
 import todo.application.service.ArticleService;
-import todo.application.service.MemberArticleService;
-import todo.application.service.MemberService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
-
-import static todo.application.controller.LoginChar.LOGIN_MEMBER;
 
 
+@Monitoring
 @Controller
 @Slf4j
 @RequiredArgsConstructor
 public class MemberArticleNoSecurityController {
 
 
-
-    private final MemberService memberService;
+    //== 의존관계==//
     private final ArticleService articleService;
-    private final MemberArticleService memberArticleService;
+
+
 
 
     // 회원 작성 폼으로 넘어감
@@ -48,7 +44,7 @@ public class MemberArticleNoSecurityController {
 
     @PostMapping("/article/saveForm")
     public String articleSave(@Valid @ModelAttribute(name = "articleForm") ArticleForm form,
-                              BindingResult bindingResult, Model model, HttpServletRequest request) {
+                              BindingResult bindingResult, HttpServletRequest request) {
 
         log.info("Binding Result = {}", bindingResult);
 
@@ -58,13 +54,15 @@ public class MemberArticleNoSecurityController {
 
 
         MemberLoginSessionForm loginMember = (MemberLoginSessionForm) request.getSession().getAttribute("loginMember");
-        log.info("article Form localDateTIme= {}", form.getDueDate());
         articleService.saveNewArticle(form.getWriteContents(), form.getWriteTitle(), form.getDueDate(),loginMember.getMemberId());
         return "redirect:/article/list";
     }
 
     @GetMapping("article/list")
-    public String articleList(HttpServletRequest request, Model model) {
+    public String articleList(HttpServletRequest request, Model model, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
+        log.info("pageable size ={}", pageable.getPageSize());
+
 
         // 로그인 정보 확인
         HttpSession session = request.getSession();
@@ -72,13 +70,7 @@ public class MemberArticleNoSecurityController {
 
 
         // 로그인 정보 바탕으로 게시글 확인
-        List<MemberArticle> articleByMemberId = articleService.findArticleByMemberId(loginMember.getMemberId());
-
-        for (MemberArticle memberArticle : articleByMemberId) {
-            log.info("memberArticle : {}", memberArticle.getArticle().getStatus());
-        }
-
-
+        Slice<MemberArticle> articleByMemberId = articleService.findPagingArticleByMemberId(loginMember.getMemberId(), pageable);
         model.addAttribute("memberArticle", articleByMemberId);
         model.addAttribute("memberNickname", loginMember.getNickname());
 
