@@ -107,5 +107,8 @@
 - [쿼리 개선] 수정 Validation 필요 쿼리 3회 → 2회로 개선(컨트롤러 + 서비스 적용 완료)
 - [방어 코드] 회원 가입 시, Unique 제약 조건 발생에 대한 방어코드 작성 (Exception 터지면 BindingResult로 보냄) 
 - [기능 개선] ToDoList Due Date 수정, 등록에서 다른 포멧형식으로 나오는 것을 수정(Formatter 포멧 형식 통일)
-- TODO 1. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) → Article Version 적용되어있으나, 단일 수정으로 낙관적 락 필요없을 것으로 예상됨(자신이 적은 글은 자신만 수정할 수 있기 때문) 
-- TODO 2. 이미 가지고 있으면 페이징 대상에서 제외한다.
+- [기능 개선] ToDoList 홈에서 새로고침할 때마다 다른 List(날짜 제각각)가 나와, Query 정렬 기준 추가로 해결(PK 값으로 정렬)
+- [기능 개선] Complete로 바뀐 ToDoList는 게시글 리스트에서 나오지 않게 변경함. 
+- TODO 1. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) → Article Version 적용되어있으나, 단일 수정으로 낙관적 락 필요없을 것으로 예상됨(자신이 적은 글은 자신만 수정할 수 있기 때문) → TODO에서 앞으로 제외 
+- TODO 2. Complete로 바뀐 ToDoList만 페이징해서 볼 수 있는 View의 개발 필요
+- TODO 3. 공유하고자 했을 때, 상대방이 수락했을 경우에만 실제로 공유되도록 함. (공유 요청을 받은 View, 공유 요청을 위한 Domain, Controller 개발 필요) 
