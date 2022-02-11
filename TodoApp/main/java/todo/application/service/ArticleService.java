@@ -2,17 +2,19 @@ package todo.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.Article;
 import todo.application.domain.ArticleStatus;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
-import todo.application.repository.ArticleRepository;
+import todo.application.repository.ArticleRepositoryImpl;
+import todo.application.repository.MemberArticleRepository;
 import todo.application.repository.MemberRepository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,8 +24,9 @@ import java.util.List;
 @Slf4j
 public class ArticleService {
 
-    private final ArticleRepository articleRepository;
+    private final ArticleRepositoryImpl articleRepository;
     private final MemberRepository memberRepository;
+    private final MemberArticleRepository memberArticleRepository;
 
 
     //TODO : Validation 기능 개발. 글 수정, 삭제, 공유는 원본 글쓴이만 가능하다.
@@ -99,6 +102,10 @@ public class ArticleService {
         return articleRepository.findArticleById(articleId);
     }
 
+    public Slice<MemberArticle> findPagingArticleByMemberId(Long memberId, Pageable pageable) {
+        return memberArticleRepository.findSliceArticleByMemberId(memberId, pageable);
+    }
+
 
     /**
      * 수정 로직
@@ -106,25 +113,20 @@ public class ArticleService {
 
     // 글 수정
     @Transactional(readOnly = false)
-    public void editNewArticle(Long articleId, ArticleStatus status,String editWriteTitle, String editWriteContents, Long memberId) {
-
+    public void editNewArticle(Long articleId, Article editArticle, Long memberId) {
 
         if (!wasWrittenByThisMember(memberId,articleId)) {
             log.info("적은 사람과 소유자가 달라 글을 수정할 수 없습니다. ");
             return;
         }
 
+        Article articleById = articleRepository.findArticleById(articleId);
 
         // 더티 체킹
-
-        log.info("더티 체킹 기대1");
-        Article articleById = articleRepository.findArticleById(articleId);
-        articleById.setStatus(status);
-        articleById.setWriteTitle(editWriteTitle);
-        articleById.setWriteContents(editWriteContents);
-
-        log.info("더티 체킹 기대2");
-
+        articleById.setDueDate(editArticle.getDueDate());
+        articleById.setStatus(editArticle.getStatus());
+        articleById.setWriteTitle(editArticle.getWriteTitle());
+        articleById.setWriteContents(editArticle.getWriteContents());
 
     }
 
