@@ -102,3 +102,7 @@
 - [신규 기능] 에러 페이지 랜딩 기능 구현 → @Montoring 어노테이션, ErrorControllAdvice, Error.html 구현
 - [쿼리 개선] 수정 Validation 필요 쿼리 3회 → 2회로 개선(테스트 코드 작성, 컨트롤러 적용 필요)
 -TODO : 1. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) 2. 이미 가지고 있으면 페이징 대상에서 제외한다.
+
+# 22.02.11
+- [쿼리 개선] 수정 Validation 필요 쿼리 3회 → 2회로 개선(컨트롤러 + 서비스 적용 완료)
+- [방어 코드] 회원 가입 시, Unique 제약 조건 발생에 대한 방어코드 작성 (Exception 터지면 BindingResult로 보냄) 
