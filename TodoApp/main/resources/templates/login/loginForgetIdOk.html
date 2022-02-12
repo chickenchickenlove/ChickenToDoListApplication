@@ -20,9 +20,10 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <p th:text="|${loginForgetIdForm.email}로 가입된 ID는 '${loginForgetIdForm.joinId}' 입니다.|"></p>
+                                <a class="btn btn-primary text-uppercase" th:href="@{/}">HOME</a>
                                 <a class="btn btn-primary text-uppercase" th:href="@{/login}">Log-In</a>
                                 <a class="btn btn-primary text-uppercase" th:href="@{/forgetpasswor}">비밀번호 찾기</a>
-                                <a class="btn btn-primary text-uppercase" th:href="@{/}">HOME</a>
+
                             </form>
                         </div>
                     </div>

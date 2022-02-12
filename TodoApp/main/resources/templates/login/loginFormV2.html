@@ -19,7 +19,7 @@
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
-                        <p>원활한 기능 이용을 위해 로그인을 해주세요! </p>
+                        <h3 th:style="'color: blue'" th:text="|원활한 기능 이용을 위해 로그인 부탁해요 :)|"> 안내문구 </h3>
                         <div class="my-5">
                             <form role="form" action="" th:object="${loginForm}" method="post">
                                 <tr th:if="${#fields?.hasGlobalErrors()}" th:each="myError : ${#fields.globalErrors()}">
@@ -27,12 +27,12 @@
                                 </tr>
 
                                 <div class="form-floating">
-                                    <input type="password" class="form-control" th:field="*{joinId}" placeholder="로그인 ID를 입력해주세요"/>
+                                    <input type="password" class="form-control" th:field="*{joinId}" placeholder=" "/>
                                     <label th:for="joinId"> ID </label>
                                     <div th:errors="*{joinId}" th:style="'color:red'"></div>
                                 </div>
                                 <div class="form-floating">
-                                    <input type="password" class="form-control" th:field="*{password}" placeholder="비밀번호를 입력해주세요 "/>
+                                    <input type="password" class="form-control" th:field="*{password}" placeholder=" "/>
                                     <label th:for="password"> 비밀번호 </label>
                                     <div th:errors="${loginForm.password}" th:style="'color:red'"></div>
                                 </div>
