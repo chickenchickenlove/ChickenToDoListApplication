@@ -119,3 +119,4 @@
 - [신규 기능] Complete로 바뀐 ToDoList만 페이징해서 볼 수 있는 Controller, Service, View , Repository 개발 및 적용 완료
 - [화면 수정] footer Icon 및 링크 재정비(Git, Facebook, Twitter → Git, 백준, 블로그)
 - [신규 기능] 잘못된 접근 에러 View + 통합 에러 메세지 출력 View 추가
+- [신규 기능] 재시도 AOP 추가. (접속 에러 시, 최대 3회까지 재시도 가능하도록 AOP 적용. @Retry 기반으로 적용. 조회 메서드에 적용) 
