@@ -14,6 +14,7 @@ import todo.application.controller.form.ArticleForm;
 import todo.application.controller.form.MemberLoginSessionForm;
 import todo.application.domain.MemberArticle;
 import todo.application.service.ArticleService;
+import todo.application.service.MemberArticleService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -29,6 +30,7 @@ public class MemberArticleNoSecurityController {
 
     //== 의존관계==//
     private final ArticleService articleService;
+    private final MemberArticleService memberArticleService;
 
 
 
@@ -36,8 +38,10 @@ public class MemberArticleNoSecurityController {
     // 회원 작성 폼으로 넘어감
     @GetMapping("/article/saveform")
     public String articleSaveForm(Model model) {
+
         ArticleForm articleForm = new ArticleForm();
         model.addAttribute("articleForm", articleForm);
+
         return "article/articleFormV2";
     }
 
@@ -53,6 +57,8 @@ public class MemberArticleNoSecurityController {
         }
 
 
+        // 로그인 처리됨 → Null Check 필요 X
+
         MemberLoginSessionForm loginMember = (MemberLoginSessionForm) request.getSession().getAttribute("loginMember");
         articleService.saveNewArticle(form.getWriteContents(), form.getWriteTitle(), form.getDueDate(),loginMember.getMemberId());
         return "redirect:/article/list";
@@ -63,20 +69,37 @@ public class MemberArticleNoSecurityController {
 
         log.info("pageable size ={}", pageable.getPageSize());
 
-
-        // 로그인 정보 확인
+        // 로그인 정보 확인, 로그인 처리됨 → Null Check 필요 X
         HttpSession session = request.getSession();
         MemberLoginSessionForm loginMember = (MemberLoginSessionForm)session.getAttribute(LoginChar.LOGIN_MEMBER);
 
 
         // 로그인 정보 바탕으로 게시글 확인
-        Slice<MemberArticle> articleByMemberId = articleService.findPagingArticleByMemberId(loginMember.getMemberId(), pageable);
+        Slice<MemberArticle> articleByMemberId = memberArticleService.findPagingArticleByMemberIdNotCompleted(loginMember.getMemberId(), pageable);
         model.addAttribute("memberArticle", articleByMemberId);
         model.addAttribute("memberNickname", loginMember.getNickname());
 
         return "article/articleListV2";
     }
 
+
+    @GetMapping("article/list-completed")
+    public String articleListCompletedOnly(HttpServletRequest request, Model model, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
+        log.info("pageable size ={}", pageable.getPageSize());
+
+        // 로그인 정보 확인, 로그인 처리됨 → Null Check 필요 X
+        HttpSession session = request.getSession();
+        MemberLoginSessionForm loginMember = (MemberLoginSessionForm)session.getAttribute(LoginChar.LOGIN_MEMBER);
+
+
+        // 로그인 정보 바탕으로 게시글 확인
+        Slice<MemberArticle> articleByMemberId = memberArticleService.findPagingArticleByMemberIdCompletedOnly(loginMember.getMemberId(), pageable);
+        model.addAttribute("memberArticle", articleByMemberId);
+        model.addAttribute("memberNickname", loginMember.getNickname());
+
+        return "article/articleListCompleted";
+    }
 
 
 
