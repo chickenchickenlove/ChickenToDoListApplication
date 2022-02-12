@@ -116,5 +116,5 @@
 
 
 # 22.02.12
-[신규 기능] Complete로 바뀐 ToDoList만 페이징해서 볼 수 있는 Controller, Service, View , Repository 개발 및 적용 완료
-[화면 수정] Navigator Icon 및 링크 재정비(Git, Facebook, Twitter → Git, 백준, 블로그)
+-[신규 기능] Complete로 바뀐 ToDoList만 페이징해서 볼 수 있는 Controller, Service, View , Repository 개발 및 적용 완료
+-[화면 수정] footer Icon 및 링크 재정비(Git, Facebook, Twitter → Git, 백준, 블로그)
