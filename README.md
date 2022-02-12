@@ -120,3 +120,5 @@
 - [화면 수정] footer Icon 및 링크 재정비(Git, Facebook, Twitter → Git, 백준, 블로그)
 - [신규 기능] 잘못된 접근 에러 View + 통합 에러 메세지 출력 View 추가
 - [신규 기능] 재시도 AOP 추가. (접속 에러 시, 최대 3회까지 재시도 가능하도록 AOP 적용. @Retry 기반으로 적용. 조회 메서드에 적용) 
+- [기능 개선] RequestShareArticleController AOP 기반 보안 기능 추가 (@ShareSecurity 어노테이션 기반 AOP) 
+- [기능 분리] Share 메서드 / 그 외 메서드 분리 적용 위해 @EditDetailSecurity / @ShareSecurity로 보안 AOP 분리
