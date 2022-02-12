@@ -1,27 +1,25 @@
 package todo.application.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONUtil;
-import org.assertj.core.api.Assertions;
+import org.h2.message.DbException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.matchers.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
-import todo.application.service.MemberService;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -45,7 +43,6 @@ class MemberRepositoryTest {
 
 
     @BeforeEach
-//    @Rollback(false)
     void init_MemberArticle() {
 
         Member newMember1 = Member.createNewMember("987765", "987765", "987765", "987765@naver.com");
@@ -81,8 +78,23 @@ class MemberRepositoryTest {
         em.flush();
         em.clear();
 
+        try {
+            memberRepository.saveMember(newMember2);
+            em.flush();
+            em.clear();
+        } catch (DataIntegrityViolationException a) {
+            log.info("DataIntegrityViolationException = {}", a.getMessage());
+        } catch (DbException b) {
+            log.info("DbException = {}", b.getMessage());
+        } catch (ConstraintViolationException c) {
+            log.info("ConstraintViolationException = {}", c.getMessage());
+        } catch (PersistenceException e) {
+            log.info("PersistenceException = {}", e.getClass());
+        }
 
-        memberRepository.saveMember(newMember2);
+        log.info("newMember1 Id = {}", newMember1.getId());
+        log.info("newMember2 Id = {}", newMember2.getId());
+
 
 
     }
@@ -110,10 +122,10 @@ class MemberRepositoryTest {
         Long saveMemberId = memberRepository.saveMember(newMember);
 
         //given
-        List<Member> memberByJoinId = memberRepository.findMemberByJoinId("qqq123456zbzb");
+        Member memberByJoinId = memberRepository.findMemberByJoinId("qqq123456zbzb");
 
         // when
-        assertThat(memberByJoinId.get(0).getJoinId()).isEqualTo("qqq123456zbzb");
+        assertThat(memberByJoinId.getJoinId()).isEqualTo("qqq123456zbzb");
     }
 
     @Test
@@ -125,16 +137,15 @@ class MemberRepositoryTest {
         Long saveMemberId = memberRepository.saveMember(newMember);
 
         //given
-        List<Member> memberByJoinId = memberRepository.findMemberByJoinId("qweqweqweqwe");
+        Member memberByJoinId = memberRepository.findMemberByJoinId("qweqweqweqwe");
 
         // then
-        assertThat(memberByJoinId.size()).isEqualTo(0);
+        assertThat(memberByJoinId).isNull();
 
     }
 
 
     @Test
-    @Rollback(value = false)
     void 중복이름_멀티쓰레드_예외발생해야함() throws InterruptedException {
 
         // 쓰레드 풀 생성성
@@ -307,7 +318,7 @@ class MemberRepositoryTest {
 
 
     @Test
-    @DisplayName("memberSearch joinId / nickname 각각 다른 회원 존재하는거 치면 2개 나와야함")
+    @DisplayName("memberSearch joinId / nickname 각각 다른 회원 존재하는거 치면 10개 나와야함")
     void memberSearchPosiTest4() {
 
         MemberSearch memberSearch = new MemberSearch();
@@ -319,16 +330,16 @@ class MemberRepositoryTest {
 
 
         //then
-        assertThat(memberByMemberSearch.getContent().size()).isEqualTo(2);
-        assertThat(memberByMemberSearch.hasNext()).isFalse();
+        assertThat(memberByMemberSearch.getContent().size()).isEqualTo(10);
+        assertThat(memberByMemberSearch.hasNext()).isTrue();
         assertThat(memberByMemberSearch.hasPrevious()).isFalse();
         assertThat(memberByMemberSearch.isFirst()).isTrue();
-        assertThat(memberByMemberSearch.isLast()).isTrue();
+        assertThat(memberByMemberSearch.isLast()).isFalse();
     }
 
 
     @Test
-    @DisplayName("memberSearch joinId 존재 / nickname 미존재 -> 1개 나와야함 ")
+    @DisplayName("memberSearch joinId 존재 / nickname 미존재 -> 10개 나와야함 ")
     void memberSearchPosiTest5() {
 
         MemberSearch memberSearch = new MemberSearch();
@@ -340,15 +351,63 @@ class MemberRepositoryTest {
 
 
         //then
-        assertThat(memberByMemberSearch.getContent().size()).isEqualTo(1);
-        assertThat(memberByMemberSearch.hasNext()).isFalse();
+        assertThat(memberByMemberSearch.getContent().size()).isEqualTo(10);
+        assertThat(memberByMemberSearch.hasNext()).isTrue();
         assertThat(memberByMemberSearch.hasPrevious()).isFalse();
         assertThat(memberByMemberSearch.isFirst()).isTrue();
-        assertThat(memberByMemberSearch.isLast()).isTrue();
+        assertThat(memberByMemberSearch.isLast()).isFalse();
     }
 
 
 
+
+    @Test
+    @DisplayName("memberSearch joinId + nickname 비슷한 거 뒷쪽에 나올 수 있게 한다면")
+    void memberSearchPosiTest6() {
+
+        MemberSearch memberSearch = new MemberSearch();
+        memberSearch.setJoinId("가나다");
+        memberSearch.setNickname("가나다");
+
+        PageRequest pageable = PageRequest.of(0, 10);
+        Slice<Member> memberByMemberSearch = memberRepository.findMemberByMemberSearch(memberSearch, pageable);
+
+
+        //then
+        assertThat(memberByMemberSearch.getContent().size()).isEqualTo(10);
+        assertThat(memberByMemberSearch.hasNext()).isTrue();
+        assertThat(memberByMemberSearch.hasPrevious()).isFalse();
+        assertThat(memberByMemberSearch.isFirst()).isTrue();
+        assertThat(memberByMemberSearch.isLast()).isFalse();
+
+        System.out.println("pageable = " + memberByMemberSearch.nextPageable());
+
+    }
+
+
+    @Test
+    @DisplayName("NextPageable")
+    void memberSearchPosiTest7() {
+
+        MemberSearch memberSearch = new MemberSearch();
+        memberSearch.setJoinId("가나다");
+        memberSearch.setNickname("가나다");
+
+        PageRequest pageable = PageRequest.of(0, 10);
+        Slice<Member> memberByMemberSearch = memberRepository.findMemberByMemberSearch(memberSearch, pageable);
+
+
+        //then
+        assertThat(memberByMemberSearch.getContent().size()).isEqualTo(10);
+        assertThat(memberByMemberSearch.hasNext()).isTrue();
+        assertThat(memberByMemberSearch.hasPrevious()).isFalse();
+        assertThat(memberByMemberSearch.isFirst()).isTrue();
+        assertThat(memberByMemberSearch.isLast()).isFalse();
+
+        System.out.println("pageable = " + memberByMemberSearch.nextPageable());
+        System.out.println("memberByMemberSearch.nextPageable() = " + memberByMemberSearch.nextPageable());
+
+    }
 
 
 

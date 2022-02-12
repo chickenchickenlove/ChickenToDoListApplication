@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 import todo.application.service.MemberService;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +34,8 @@ public class ArticleRepositoryTest {
     @Autowired
     MemberService memberService;
 
+    @Autowired
+    EntityManager em;
 
 
     @BeforeEach
@@ -55,20 +57,22 @@ public class ArticleRepositoryTest {
         }
 
         for (int i = 0; i < 25; i++) {
-            memberService.saveMember("가나다" + i, "가나다" + i, "abc", "abc@!ab");
+            memberService.saveMember("가나다" + i, "가나다" + i, "abc", "abc@!ab" + i);
         }
+
 
     }
 
     // Article : 25 , MemberArticle : 25, Member 51
 
-
     @Test
     @DisplayName("0페이지만 출력")
     void sliceArticleTest1() {
 
+        System.out.println("TEST START ===========================");
+
         //given
-        Member findMember = memberService.findMemberByJoinId("1").get(0);
+        Member findMember = memberService.findMemberByJoinId("1");
         PageRequest pageable = PageRequest.of(0, 10);
 
 
@@ -95,7 +99,7 @@ public class ArticleRepositoryTest {
     void sliceArticleTest2() {
 
         //given
-        Member findMember = memberService.findMemberByJoinId("1").get(0);
+        Member findMember = memberService.findMemberByJoinId("1");
         PageRequest pageable = PageRequest.of(0, 10);
 
 
@@ -121,10 +125,25 @@ public class ArticleRepositoryTest {
         assertThat(findArticleSlicePageLast.isFirst()).isFalse();
         assertThat(findArticleSlicePageLast.isLast()).isTrue();
         assertThat(findArticleSlicePageLast.hasPrevious()).isTrue();
-
-
     }
 
+
+
+    @Test
+    @DisplayName("page = 0, size = 0이 들어올 경우? --> 예외 발생")
+    void sliceArticleTest3() {
+
+        //given
+        Member findMember = memberService.findMemberByJoinId("1");
+
+
+        // when + then
+
+        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class,
+                () -> {
+                    PageRequest pageable = PageRequest.of(0, 0);
+                });
+    }
 
 
 }
