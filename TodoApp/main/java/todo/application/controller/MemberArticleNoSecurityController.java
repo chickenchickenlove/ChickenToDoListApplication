@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import todo.application.controller.aop.annotation.Retry;
 import todo.application.controller.controllerexception.annotation.Monitoring;
 import todo.application.controller.form.ArticleForm;
 import todo.application.controller.form.MemberLoginSessionForm;
@@ -36,6 +37,8 @@ public class MemberArticleNoSecurityController {
 
 
     // 회원 작성 폼으로 넘어감
+
+    @Retry
     @GetMapping("/article/saveform")
     public String articleSaveForm(Model model) {
 
@@ -64,6 +67,7 @@ public class MemberArticleNoSecurityController {
         return "redirect:/article/list";
     }
 
+    @Retry
     @GetMapping("article/list")
     public String articleList(HttpServletRequest request, Model model, @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
@@ -83,6 +87,8 @@ public class MemberArticleNoSecurityController {
     }
 
 
+
+    @Retry
     @GetMapping("article/list-completed")
     public String articleListCompletedOnly(HttpServletRequest request, Model model, @PageableDefault(page = 0, size = 10) Pageable pageable) {
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import todo.application.controller.aop.annotation.Retry;
 import todo.application.controller.form.*;
 import todo.application.domain.Member;
 import todo.application.service.MemberService;
@@ -26,10 +26,9 @@ public class LoginController {
 
     private final MemberService memberService;
 
-    //== 로그인 로직==//
-
 
     // 로그인폼 접속
+    @Retry
     @GetMapping("/login")
     public String loginHome(Model model) {
         model.addAttribute("loginForm", new LoginForm());
@@ -42,6 +41,7 @@ public class LoginController {
                             @RequestParam(name = "requestURI", defaultValue = "null") String requestUri) {
 
         // 로그인 실패하면 에러 메세지를 만들어서 보내준다.
+        // Null Check 필요 X : BindingResult에 있음.
         Member findMember = checkLogin(form, bindingResult, request);
 
         if (bindingResult.hasErrors()) {
@@ -53,16 +53,12 @@ public class LoginController {
         // 로그인 성공 -> 세션 생성
         createNewSession(findMember, request);
 
-
-        // 인터셉터에 걸려 온 것이 아닐 때,
-        // 바로 redirect
+        // 인터셉터에 걸려 온 것이 아닐 때, 바로 redirect
         if (requestUri.equals("null")) {
             return "redirect:/";
         }
 
-        log.info("here5");
-        // 인터셉터에 걸려 왔을 때
-        // 최종 지점으로 redirect
+        // 인터셉터에 걸려 왔을 때, 최종 지점으로 redirect
         return "redirect:" + requestUri;
     }
 
@@ -70,8 +66,11 @@ public class LoginController {
     //== 로그아웃 로직==//
 
     @GetMapping("/logout")
+    @Retry
     public String logOut(HttpServletRequest request) {
         HttpSession session = request.getSession();
+
+        // 세션 만료 + 제거
         session.setMaxInactiveInterval(0);
         session.invalidate();
 
@@ -80,12 +79,12 @@ public class LoginController {
 
 
     //== ID 찾기 ==//
+    @Retry
     @GetMapping("/forgetid")
     public String forgetIdForm(Model model) {
         model.addAttribute("loginForgetIdForm", new LoginForgetIdForm());
         return "login/loginForgetId";
     }
-
 
     @PostMapping("/forgetid")
     public String forgetIdView(@Valid @ModelAttribute(name = "loginForgetIdForm") LoginForgetIdForm form,
@@ -97,9 +96,10 @@ public class LoginController {
             return "login/loginForgetId";
         }
 
-
         // DB Validation
         Member findMember = memberService.findJoinIdByEmail(form.getEmail());
+
+        // null Check
         if (findMember == null) {
             bindingResult.reject("NoSuchEmailId", "가입된 회원이 없습니다.");
         }
@@ -109,6 +109,8 @@ public class LoginController {
             return "login/loginForgetId";
         }
 
+        // Model에 있는 form에 값을 set한다.
+
         form.setJoinId(findMember.getJoinId());
         return "login/loginForgetIdOk";
     }
@@ -117,6 +119,7 @@ public class LoginController {
 
     //== 비밀번호 찾기 ==//
     @GetMapping("/forgetpassword")
+    @Retry
     public String forgetPasswordForm(Model model) {
         model.addAttribute("loginForgetPasswordForm", new LoginForgetPasswordForm());
         return "login/loginForgetPassword";
@@ -125,14 +128,13 @@ public class LoginController {
 
     @PostMapping("/forgetpassword")
     public String forgetPasswordView(@Valid @ModelAttribute(name = "loginForgetPasswordForm") LoginForgetPasswordForm form,
-                               BindingResult bindingResult, Model model) {
+                               BindingResult bindingResult) {
 
         // input Validation
         if (bindingResult.hasErrors()) {
             log.info("Binding Result = {}", bindingResult);
             return "login/loginForgetPassword";
         }
-
 
 
         // DB Validation
@@ -147,7 +149,6 @@ public class LoginController {
         }
 
         form.setPassword(findMember.getPassword());
-
         return "login/loginForgetPasswordOk";
     }
 
