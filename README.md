@@ -112,3 +112,9 @@
 - TODO 1. 트랜잭션 격리 수준 적용(낙관적 락, Unique 제약조건 등) → Article Version 적용되어있으나, 단일 수정으로 낙관적 락 필요없을 것으로 예상됨(자신이 적은 글은 자신만 수정할 수 있기 때문) → TODO에서 앞으로 제외 
 - TODO 2. Complete로 바뀐 ToDoList만 페이징해서 볼 수 있는 View의 개발 필요
 - TODO 3. 공유하고자 했을 때, 상대방이 수락했을 경우에만 실제로 공유되도록 함. (공유 요청을 받은 View, 공유 요청을 위한 Domain, Controller 개발 필요) 
+
+
+
+# 22.02.12
+[신규 기능] Complete로 바뀐 ToDoList만 페이징해서 볼 수 있는 Controller, Service, View , Repository 개발 및 적용 완료
+[화면 수정] Navigator Icon 및 링크 재정비(Git, Facebook, Twitter → Git, 백준, 블로그)
