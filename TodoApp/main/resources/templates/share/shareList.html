@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/header :: header">
+</head>
+<body>
+<!-- Navigation-->
+<nav th:replace="fragments/navigationLogin :: nav"></nav>
+
+<!-- Body header-->
+<div th:replace="fragments/bodyheader :: header"></div>
+<!-- Main Content-->
+<div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+
+
+
+        <div th:if="${shareArticle.getNumberOfElements() == 0 }" class="col-md-10 col-lg-8 col-xl-7">
+            <p th:text="|누군가 공유를 원하는 TODO가 아직은 없어요 :)|" th:style="'color: orange'">인사말</p>
+        </div>
+
+
+        <div th:each="article : ${shareArticle}" class="col-md-10 col-lg-8 col-xl-7">
+            <!-- Post preview-->
+            <div class="post-preview">
+                <h2 class="post-title" th:style="${article.getArticle().getWriter() != memberNickname} ? 'color: blue' : 'color: black'"
+                        th:text="|${article.fromMemberNickname}님의 ${article.getArticle().getWriteTitle()}|"> 메인 타이틀 </h2>
+<!--                <a th:href="|/article/${article.getArticle().getId()}/detail|">    -->
+<!--                </a>-->
+                <p class="post-meta" th:text="|Posted by ${article.getArticle().getWriter()} on ${{article.getArticle().getCreatedTime()}}|" />
+                <!--------------------------------------------------->
+
+                <a th:href="@{/share/{requestSharedArticleId}(requestSharedArticleId = ${article.id})}">
+                    <div class="btn btn-primary text-uppercase">수락</div>
+                </a>
+                <a th:href="@{/share/{requestShareArticleId}/cancel(requestShareArticleId = ${article.id})}">
+                    <div class="btn btn-primary text-uppercase">거절</div>
+                </a>
+                <hr class="my-4" />
+
+                <!--------------------------------------------------->
+
+            </div>
+
+
+
+
+        </div>
+            </div>
+            <!-- Divider-->
+            <hr class="my-4" />
+        </div>
+        <!-- Pager-->
+        <div class="d-flex justify-content-end mb-4">
+            <a class="btn btn-primary text-uppercase" th:if="${shareArticle.hasPrevious()}"
+               th:href="@{/share/list(
+               page = ${shareArticle.previousPageable().getPageNumber()},
+               size = ${shareArticle.previousPageable().getPageSize()})}">← 이전 ToDo</a></div>
+    </div>
+    <div class="d-flex justify-content-end mb-4">
+        <a class="btn btn-primary text-uppercase" th:if="${shareArticle.hasNext()}"
+           th:href="@{/share/list(
+               page = ${shareArticle.nextPageable().getPageNumber()},
+               size = ${shareArticle.nextPageable().getPageSize()})}">다음 ToDo →</a></div>
+</div>
+</div>
+<div th:replace="fragments/footerReal :: footer">
+
+</div>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script th:src="@{/bootstrap/js/scripts.js}"></script>
+</body>
+</html>
