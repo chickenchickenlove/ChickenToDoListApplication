@@ -12,22 +12,21 @@
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
-                        <p>무엇을 언제까지 할지 한번 작성해봐요! </p>
-                        <p>To Do List는 작성된 리스트를 작성자와 공유자에게만 보여드려요! </p>
+                        <p th:text="|작성된 ToDo List는 작성자와 공유자에게만 보여요 :)|" th:style="'color: orange'"> 안내문구</p>
                         <div class="my-5">
                             <form role="form" action="/article/saveForm" th:object="${articleForm}" method="post">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" th:field="${articleForm.writeTitle}" placeholder="해야할 일을 알려주세요!..."/>
+                                    <input type="text" class="form-control" th:field="${articleForm.writeTitle}" placeholder=" "/>
                                     <label th:for="writeTitle"> To Do </label>
                                     <div th:errors="*{writeTitle}" th:style="'color:red'"></div>
                                 </div>
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" th:field="*{dueDate}" placeholder="언제까지 해야하는지를 알려주세요! "/>
+                                    <input type="text" class="form-control" th:field="*{dueDate}" placeholder=" "/>
                                     <label th:for="dueDate"> Due Date </label>
                                     <div th:errors="*{dueDate}" th:style="'color:red'"></div>
                                 </div>
                                 <div class="form-floating">
-                                    <textarea class="form-control" th:field="*{writeContents}" placeholder="Enter your message here..." style="height: 12rem"></textarea>
+                                    <textarea class="form-control" th:field="*{writeContents}" placeholder=" " style="height: 12rem"></textarea>
                                     <label th:for="writeContents">Detail</label>
                                     <div th:errors="*{writeContents}" th:style="'color:red'"></div>
                                 </div>

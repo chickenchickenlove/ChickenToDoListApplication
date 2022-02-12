@@ -21,9 +21,9 @@
                                     <div th:errors="*{writer}" th:class="fieldError"></div>
                                 </div>
                                 <div class="form-floating">
-                                    <input type="text" readonly th:style="'background-color: white'" class="form-control" th:field="*{updatedTime}" placeholder="언제까지 해야하는지를 알려주세요! "/>
-                                    <label th:for="updatedTime"> Due Date </label>
-                                    <div th:errors="*{updatedTime}" th:class="fieldError"></div>
+                                    <input type="text" readonly th:style="'background-color: white'" class="form-control" th:field="*{dueDate}" placeholder="언제까지 해야하는지를 알려주세요! "/>
+                                    <label th:for="dueDate"> Due Date </label>
+                                    <div th:errors="*{dueDate}" th:class="fieldError"></div>
                                 </div>
                                 <div class="form-floating">
                                     <input type="text" readonly th:style="'background-color: white'" class="form-control" th:field="*{status}" placeholder="언제까지 해야하는지를 알려주세요! "/>
@@ -36,6 +36,7 @@
                                     <div th:errors="*{writeContents}" th:class="fieldError"></div>
                                 </div>
                                 <br />
+
                                 <a th:href="@{edit}">
                                     <div class="btn btn-primary text-uppercase">EDIT!</div>
                                 </a>
@@ -45,9 +46,10 @@
                                 <a th:href="|/article/${articleId}/share|">
                                     <div class="btn btn-primary text-uppercase">Share</div>
                                 </a>
-                                <a th:href="|/article/${articleId}/complete|">
-                                    <div class="btn btn-primary text-uppercase">Complete</div>
+                                <a th:href="|/article/${articleId}/remove|">
+                                    <div class="btn btn-primary text-uppercase">Delete</div>
                                 </a>
+
                             </form>
                         </div>
                     </div>

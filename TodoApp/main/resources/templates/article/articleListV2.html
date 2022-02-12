@@ -22,6 +22,14 @@
             </a>
         </div>
 
+        <h2 th:if="${memberArticle.getNumberOfElements() !=0}" class="col-md-10 col-lg-8 col-xl-7">
+            <p th:text="|공유받은 글은 파란색으로 표시돼요 :)|" >인사말</p>
+            </a>
+        </h2>
+
+        <hr class="my-4" />
+
+
 
         <div th:each="article : ${memberArticle}" class="col-md-10 col-lg-8 col-xl-7">
             <!-- Post preview-->
@@ -41,13 +49,13 @@
             <a class="btn btn-primary text-uppercase" th:if="${memberArticle.hasPrevious()}"
                th:href="@{/article/list(
                page = ${memberArticle.previousPageable().getPageNumber()},
-               size = ${memberArticle.previousPageable().getPageSize()})}">← 이전 회원</a></div>
+               size = ${memberArticle.previousPageable().getPageSize()})}">← 이전 ToDo</a></div>
         </div>
         <div class="d-flex justify-content-end mb-4">
             <a class="btn btn-primary text-uppercase" th:if="${memberArticle.hasNext()}"
                th:href="@{/article/list(
                page = ${memberArticle.nextPageable().getPageNumber()},
-               size = ${memberArticle.nextPageable().getPageSize()})}">다음 회원 →</a></div>
+               size = ${memberArticle.nextPageable().getPageSize()})}">다음 ToDo →</a></div>
         </div>
 </div>
 <div th:replace="fragments/footerReal :: footer">

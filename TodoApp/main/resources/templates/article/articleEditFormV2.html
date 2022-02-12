@@ -21,7 +21,7 @@
                                     <div th:errors="*{writeTitle}" th:style="'color:red'"></div>
                                 </div>
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" th:field="*{dueDate}" placeholder="언제까지 해야하는지를 알려주세요! "/>
+                                    <input type="text" class="form-control" th:field="${article.dueDate}" placeholder="언제까지 해야하는지를 알려주세요! "/>
                                     <label th:for="dueDate"> Due Date </label>
                                     <div th:errors="*{dueDate}" th:style="'color:red'"></div>
                                 </div>

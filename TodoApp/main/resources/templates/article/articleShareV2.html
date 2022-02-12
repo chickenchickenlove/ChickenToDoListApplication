@@ -11,16 +11,17 @@
 <!-- Main Content-->
 <div class="container px-4 px-lg-5">
     <div class="row gx-4 gx-lg-5 justify-content-center">
-<!--`       검색창 -->
+        <p th:if="${#fields.hasGlobalErrors()}" th:style="'color: red'"  th:each="error : ${#fields.errors()}" th:text="${error}"></p>
+        <!--`       검색창 -->
         <div class="my-5">
             <form role="form" th:object="${memberSearch}">
                 <div class="form-floating">
                     <label th:for="nickname"> 회원 별명 </label>
-                    <input type="text" class="form-control" th:field="*{nickname}" placeholder="해야할 일을 알려주세요!..."/>
+                    <input type="text" class="form-control" th:field="*{nickname}" placeholder=" "/>
                 </div>
                 <div class="form-floating">
                     <label th:for="joinId"> 회원 ID </label>
-                    <input type="text" class="form-control" th:field="*{joinId}" placeholder="해야할 일을 알려주세요!..."/>
+                    <input type="text" class="form-control" th:field="*{joinId}" placeholder=" "/>
                 </div>
                 <button class="btn btn-primary text-uppercase" id="submitButton" type="submit">Search Member!</button>
             </form>
@@ -31,8 +32,10 @@
 <!--                /article/share/do-->
                 <a th:href="|/article/share/do?memberId=${member.id}&articleId=${articleId}|">
 <!--                <a th:href="@{/article/share/do(memberId = ${member.getId()}, articleId = ${articleId})}">-->
-                    <h3 class="post-title" th:text="|닉네임 : ${member.nickname} / ID : ${member.joinId}|"> </h3>
-                    <h3 class="post-subtitle" th:text="|공유할까요?|"> 기한 </h3>
+                    <h3 class="post-title" th:text="|닉네임 : ${member.nickname} / ID : ${member.joinId}|"> 공유 대상</h3>
+                    <p class="post-subtitle" th:style="'color: blue'" th:text="|공유할까요?|"> 멘트 </p>
+                    <hr class="my-4" />
+
                 </a>
             </div>
 
@@ -45,7 +48,7 @@
             </a>
 
 
-            <a th:if="${members.getNumberOfElements()} >= 20" th:href="@{/article/{articleId}/share(articleId = ${articleId},
+            <a th:if="${members.isLast()} == false" th:href="@{/article/{articleId}/share(articleId = ${articleId},
             page = ${members.nextPageable().getPageNumber()},
             size = ${members.nextPageable().getPageSize()},
             nickname = ${memberSearch.getNickname()},
