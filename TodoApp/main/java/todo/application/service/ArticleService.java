@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import todo.application.controller.form.EditArticleForm;
 import todo.application.domain.Article;
 import todo.application.domain.ArticleStatus;
 import todo.application.domain.Member;
@@ -28,10 +29,6 @@ public class ArticleService {
     private final MemberRepository memberRepository;
     private final MemberArticleRepository memberArticleRepository;
 
-
-    //TODO : Validation 기능 개발. 글 수정, 삭제, 공유는 원본 글쓴이만 가능하다.
-    
-
     // 새로운 글 저장
     @Transactional(readOnly = false)
     public Long saveNewArticle(String writeContents, String writeTitle, LocalDate dueDate, Long memberId) {
@@ -52,35 +49,43 @@ public class ArticleService {
 
 
     // Article 공유
-    // 이미 있는 글이면 공유 못하게 하는 Validation 필요함.
-    // 공유되는 놈이 memberId임
     @Transactional(readOnly = false)
     public void shareArticleWithOthers(Long memberId, Long articleId, Long originalMemberId) {
 
-        // Validation : 권한이 있는지 확인함.
+        System.out.println("HEREHERE1");
+
+        // Validation : 공유할 사람이 권한이 있는지 확인함.
         if (!wasWrittenByThisMember(originalMemberId, articleId)) {
             return;
         }
 
-        // validation :
-        // 멤버 찾는다
-        // memberId와 articleId가 정확히 만족하는 memberArticle이 있는지 확인한다
-        List<MemberArticle> validation = articleRepository.findMemberArticleByMemberIdAndArticleId(memberId, articleId);
 
-        // 있다면 에러메세지를 띄워준다
-        if (validation.size() > 0) {
+        System.out.println("HEREHERE2");
+
+
+        // validation : 공유할 대상에게 동일한 글이 있는지 확인한다.
+        MemberArticle validation = articleRepository.findMemberArticleByMemberIdAndArticleId(memberId, articleId);
+
+
+        System.out.println("HEREHERE3");
+
+        if (validation != null) {
             log.info("동일한 글이 이미 해당 대상에게 있습니다. 따라서 공유가 안됩니다.");
             return;
         }
 
-        // 없다면 뒷쪽으로 넘어간다
+
+        System.out.println("HEREHERE4");
+
+        // 성공로직
         Member findMember = memberRepository.findMemberById(memberId);
-
-        // MemberArticle을 찾는다.
         Article findArticle = articleRepository.findArticleById(articleId);
-
         MemberArticle memberArticle = new MemberArticle();
         memberArticle.addMemberArticle(findMember, findArticle);
+
+
+        System.out.println("HEREHERE5");
+
 
     }
 
@@ -102,9 +107,7 @@ public class ArticleService {
         return articleRepository.findArticleById(articleId);
     }
 
-    public Slice<MemberArticle> findPagingArticleByMemberId(Long memberId, Pageable pageable) {
-        return memberArticleRepository.findSliceArticleByMemberId(memberId, pageable);
-    }
+
 
 
     /**
@@ -113,7 +116,7 @@ public class ArticleService {
 
     // 글 수정
     @Transactional(readOnly = false)
-    public void editNewArticle(Long articleId, Article editArticle, Long memberId) {
+    public void editNewArticle(Long articleId, EditArticleForm editArticle, Long memberId) {
 
         if (!wasWrittenByThisMember(memberId,articleId)) {
             log.info("적은 사람과 소유자가 달라 글을 수정할 수 없습니다. ");
@@ -123,6 +126,7 @@ public class ArticleService {
         Article articleById = articleRepository.findArticleById(articleId);
 
         // 더티 체킹
+
         articleById.setDueDate(editArticle.getDueDate());
         articleById.setStatus(editArticle.getStatus());
         articleById.setWriteTitle(editArticle.getWriteTitle());
@@ -160,9 +164,6 @@ public class ArticleService {
         }
 
         articleRepository.removeMemberArticle(articleId);
-
-
-
     }
 
 
@@ -174,19 +175,9 @@ public class ArticleService {
 
     public boolean wasWrittenByThisMember(Long memberId, Long articleId) {
 
-        log.info("wasWrittenByThisMember findMember {} : ", memberId);
-        log.info("wasWrittenByThisMember findArticle {} : ", articleId);
+        MemberArticle findMemberArticle = memberArticleRepository.findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(memberId, articleId);
 
-        // 엔티티 조회
-        Member findMember = memberRepository.findMemberById(memberId);
-        Article findArticle = articleRepository.findArticleById(articleId);
-
-        log.info("wasWrittenByThisMember findMember {} : ", findMember.toString());
-        log.info("wasWrittenByThisMember findArticle {} : ", findArticle.toString());
-
-
-        // 엔티티끼리 비교
-        return findArticle.getWriter().equals(findMember.getNickname());
+        return findMemberArticle != null ? true : false;
     }
 
 
