@@ -10,6 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import todo.application.controller.aop.annotation.MySecurity;
+import todo.application.controller.aop.annotation.Retry;
+import todo.application.controller.aop.annotation.ShareSecurity;
 import todo.application.controller.form.MemberLoginSessionForm;
 import todo.application.domain.RequestShareArticle;
 import todo.application.service.ArticleService;
@@ -31,15 +34,13 @@ public class RequestShareArticleController {
 
     // 인터셉터로 보안처리 됨.
     @GetMapping("/list")
+    @Retry
     public String shareList(HttpServletRequest request, Model model, @PageableDefault(page = 0 ,size = 10) Pageable pageable) {
 
 
-        // 값 찾아와서
+        // 값 찾음 → Model에 넣음.
         Long loginMemberId = getLoginMemberId(request);
         Slice<RequestShareArticle> requestShareArticle = requestShareArticleService.findSliceRequestShareArticle(loginMemberId, pageable);
-
-
-        // 넣어줌
         model.addAttribute("shareArticle", requestShareArticle);
 
         // 뷰 랜더링
@@ -47,9 +48,11 @@ public class RequestShareArticleController {
     }
 
 
-    // TODO 보안 기능 추가 필요
+    // 정상 동작 확인
+    @MySecurity @ShareSecurity
     @GetMapping("/{requestShareArticleId}")
-    public String doShareRequestShareArticle(@PathVariable(name = "requestShareArticleId") Long requestShareArticleId) {
+    public String doShareRequestShareArticle(@PathVariable(name = "requestShareArticleId") Long requestShareArticleId,
+                                             HttpServletRequest request) {
 
         log.info("doShareRequestShareArticle call!");
 
@@ -60,8 +63,11 @@ public class RequestShareArticleController {
         return "redirect:/";
     }
 
+    // 정상 동작 확인
+    @MySecurity @ShareSecurity
     @GetMapping("/{requestShareArticleId}/cancel")
-    public String doCancelRequestShareArticle(@PathVariable(name = "requestShareArticleId") Long requestShareArticleId) {
+    public String doCancelRequestShareArticle(@PathVariable(name = "requestShareArticleId") Long requestShareArticleId,
+                                              HttpServletRequest request) {
         requestShareArticleService.removeRequestShareArticle(requestShareArticleId);
         return "redirect:/";
     }
@@ -69,7 +75,6 @@ public class RequestShareArticleController {
 
 
     // == Validation 로직 ==//
-
     private Long getLoginMemberId(HttpServletRequest request) {
 
         // 로그인 상태 보장됨(Interceptor → null 체크 필요 X)

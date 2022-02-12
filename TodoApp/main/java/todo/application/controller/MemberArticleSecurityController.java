@@ -2,16 +2,17 @@ package todo.application.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import todo.application.controller.aop.annotation.EditDetailSecurity;
 import todo.application.controller.aop.annotation.MySecurity;
+import todo.application.controller.aop.annotation.Retry;
+import todo.application.controller.aop.annotation.ShareSecurity;
 import todo.application.controller.controllerexception.annotation.Monitoring;
 import todo.application.controller.form.EditArticleForm;
 import todo.application.controller.form.MemberLoginSessionForm;
@@ -28,7 +29,6 @@ import todo.application.service.RequestShareArticleService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
 
 import static todo.application.controller.LoginChar.LOGIN_MEMBER;
 
@@ -46,7 +46,7 @@ public class MemberArticleSecurityController {
 
 
     @ExceptionHandler
-    public Object exception(HttpServletRequest request, IllegalArgumentException e) {
+    public Object exception(IllegalArgumentException e) {
 
         if (e.getMessage().equals("잘못된 접근입니다")) {
             // 접근 권한 없는 행위 → 초기 화면으로 돌아감
@@ -56,8 +56,9 @@ public class MemberArticleSecurityController {
         return new ModelAndView();
     }
 
-    @MySecurity
+    @MySecurity @EditDetailSecurity
     @GetMapping("/article/{articleId}/detail")
+    @Retry
     public String articleDetail(Model model, @PathVariable(name = "articleId") Long articleId,  HttpServletRequest request) {
 
         // articleId로 값이 특정됨 → MemberArticle 존재 보장. 따라서 null Check 필요 X
@@ -69,8 +70,9 @@ public class MemberArticleSecurityController {
     }
 
 
-    @MySecurity
+    @MySecurity @EditDetailSecurity
     @GetMapping("/article/{articleId}/edit")
+    @Retry
     public String articleEditForm(Model model, @PathVariable(name = "articleId") Long articleId, HttpServletRequest request) {
 
         // articleId로 값이 특정됨 → MemberArticle 존재 보장. 따라서 null Check 필요 X
@@ -86,7 +88,8 @@ public class MemberArticleSecurityController {
     }
 
 
-    @MySecurity
+
+    @MySecurity @EditDetailSecurity
     @PostMapping("/article/{articleId}/edit")
     public String articleEdit(@Valid @ModelAttribute(name = "article") EditArticleForm editArticleForm , BindingResult bindingResult,
                               @PathVariable(name = "articleId") Long articleId, HttpServletRequest request) {
@@ -102,13 +105,8 @@ public class MemberArticleSecurityController {
 
 
         // articleId로 값이 특정됨 → MemberArticle 존재 보장. 따라서 null Check 필요 X
-        MemberArticle isEditPossibleThisArticleResult = isReadOrEditPossibleThisArticle(request, articleId);
+        isReadOrEditPossibleThisArticle(request, articleId);
         Long loginMemberId = getLoginMemberId(request);
-
-        // select : member / article/ memberArticle --> 쿼리 1회로 줄일 수 있을까?
-        // update : article
-
-        // id 바꾸니 service를 바꿔야한다.
 
         articleService.editNewArticle(articleId, editArticleForm, loginMemberId);
 
@@ -116,8 +114,9 @@ public class MemberArticleSecurityController {
     }
 
 
-    @MySecurity
+    @MySecurity @ShareSecurity
     @GetMapping("/article/{articleId}/share")
+    @Retry
     public String articleShareList(@ModelAttribute(name = "memberSearch") MemberSearch memberSearch,
                                    Model model, @PathVariable(name = "articleId") Long articleId,
                                    HttpServletRequest request, Pageable pageable) {
@@ -131,23 +130,9 @@ public class MemberArticleSecurityController {
     }
 
 
-    @MySecurity
-//    @GetMapping("/article/share/do")
-    public String articleShareDoing2(@ModelAttribute ShareForm form, HttpServletRequest request) {
-
-
-        // Form에서 쿼리 파라미터로 MemberId를 넘겨줌 → 존재하는게 보장됨. Null Check 필요 X.
-        Long toShareMemberId = form.getMemberId();
-        Long shareArticleId = form.getArticleId();
-
-        Long loginMemberId = getLoginMemberId(request);
-        articleService.shareArticleWithOthers(toShareMemberId, shareArticleId,loginMemberId);
-        return "redirect:/";
-    }
-
-    // TODO : BindingResult 점검해야함.
-    @MySecurity
+    @MySecurity @ShareSecurity
     @GetMapping("/article/share/do")
+    @Retry
     public String articleShareDoing(@ModelAttribute ShareForm form, HttpServletRequest request, Model model){
 
         // Form에서 쿼리 파라미터로 MemberId를 넘겨줌 → 존재하는게 보장됨. Null Check 필요 X.
@@ -166,19 +151,9 @@ public class MemberArticleSecurityController {
         return "redirect:/";
     }
 
-    @MySecurity
-    @GetMapping("/article/{articleId}/complete")
-    public String articleDoComplete(@PathVariable(name = "articleId") Long articleId,
-                                    HttpServletRequest request){
 
-        Long loginMemberId = getLoginMemberId(request);
-        articleService.completeArticle(articleId, loginMemberId);
-        return "redirect:/";
-
-    }
-
-
-    @MySecurity
+    @MySecurity @EditDetailSecurity
+    @Retry
     @GetMapping("/article/{articleId}/remove")
     public String articleDoDelete(@PathVariable(name = "articleId") Long articleId,
                                   HttpServletRequest request){
