@@ -122,3 +122,13 @@
 - [신규 기능] 재시도 AOP 추가. (접속 에러 시, 최대 3회까지 재시도 가능하도록 AOP 적용. @Retry 기반으로 적용. 조회 메서드에 적용) 
 - [기능 개선] RequestShareArticleController AOP 기반 보안 기능 추가 (@ShareSecurity 어노테이션 기반 AOP) 
 - [기능 분리] Share 메서드 / 그 외 메서드 분리 적용 위해 @EditDetailSecurity / @ShareSecurity로 보안 AOP 분리
+
+
+# 22.02.13
+- To Do : 추가 기능 개발
+- 1. 관리자 페이지 만들기 요구사항
+- ㄴ 화면 : 다른 부트 스트랩 적용 가능한지 확인(https://startbootstrap.com/previews/sb-admin-2)
+- ㄴ 기능 : 매일 방문자 수 확인해서 그래프로 표시, 게시글 관리 + 삭제, 회원 강제 탈퇴 + 관리자 회원 만들기
+- ㄴ 메인 개발 기능 : 방문자 수 확인 → Static 변수로 방문자수를 관리한다(동시성 관리 필요) / 테이블로 방문자수를 관리한다(일자별로)  / Static 변수는 5분에 1번씩만 저장한다.
+- ㄴ 추가 개발 화면 : 관리자 페이지 화면. 관리자 페이지의 게시글 관리 화면. 회원 관리 화면. 
+- ㄴ 추가 필요한 엔티티 : Member Entity에 Enum으로 속성 넣어서 권한을 분류한다. 
