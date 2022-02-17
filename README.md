@@ -141,3 +141,12 @@
 
 # 22.02.17
 - [기능 개선] @AfterReturning을 사용하면 BindingResult에서 Exception이 발생하지 않아, BindingResult가 Error가 있어도 항상 Count가 되는 문제가 있었음. AOP에서 JoinPoint 인스턴스를 통해 BindingResult를 인스턴스로 가지는지 확인하고, BindingResult의 인스턴스에 에러가 있는지 Validation 로직하는 코드를 작성해서 해당 이슈 해결
+- [신규 기능] Admin 페이지 구현 개발
+- [상세 내용 1] Member Domain 필드 추가. MemberGrade 필드로 회원 등급 관리해서 관리자 / 일반인 등급 관리함. 이에 따라 생성 메서드도 변경됨.
+- [상세 내용 2] Member Domain 필드 추가 되며, MemberRepository에 Bulk Update 연산 추가함
+- [상세 내용 3] 관리자 페이지에 사용할 DTO를 추가했고, DTO 쿼리를 MemberRepository에 작성함. 또한, Bulk Update, Bulk 삭제 기능 추가
+- [상세 내용 4] 연관해서 MemberService에 Controller와 Repository 연결 메서드 작성함
+- [상세 내용 5] Admin Controller 개발 
+- [상세 내용 6] VisitorViewRepository 추가 개발 (통계 데이터를 DTO로 불러오는 기능 작성)
+- [상세 내용 7] 자바 스크립트 + 부트 스트랩 + 타임 리프를 활용한 관리자 뷰 템플릿 구현 
+- [상세 내용 8] 관리자인 경우에만 관리자 페이지로 갈 수 있도록 관리자 권한 체크 인터셉터 구현 및 적용 
