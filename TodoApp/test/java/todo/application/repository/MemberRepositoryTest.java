@@ -1,5 +1,6 @@
 package todo.application.repository;
 
+import jdk.swing.interop.SwingInterOpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.h2.message.DbException;
 import org.hibernate.exception.ConstraintViolationException;
@@ -20,11 +21,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +40,14 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    MemberArticleRepository memberArticleRepository;
+
+    @Autowired
+    ArticleRepositoryImpl articleRepository;
+
+
 
     @Autowired
     EntityManager em;
@@ -61,6 +72,9 @@ class MemberRepositoryTest {
         for (int i = 0; i < 100; i++) {
             em.persist(Member.createNewMember("가나다" + i, "가나다" + i, "abc","abc@ab"+i));
         }
+
+        em.flush();
+        em.clear();
 
 
 
@@ -406,6 +420,153 @@ class MemberRepositoryTest {
 
         System.out.println("pageable = " + memberByMemberSearch.nextPageable());
         System.out.println("memberByMemberSearch.nextPageable() = " + memberByMemberSearch.nextPageable());
+
+    }
+
+
+
+    @Test
+    @DisplayName("BULK 삭제 테스트 : 멤버1이 1개의 글을 가지고 있을 때 멤버1 삭제 → 글, 중간 테이블도 다 삭제된다.")
+    void bulkDelete1() {
+
+
+        System.out.println("START TEST ================================");
+        //given
+
+        Member newMember = Member.createNewMember("qweqwasdasdaase123e", "qweasdfasfvzxf123qwe", "Qweqwe", "qweasvasd123asdqwe@qweqwe");
+        memberRepository.saveMember(newMember);
+
+
+
+        Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
+        article.setWriter("qweqwasdasdaase123e");
+        MemberArticle memberArticle1 = new MemberArticle();
+        memberArticle1.addMemberArticle(newMember, article);
+
+        em.flush();
+        em.clear();
+
+        ArrayList<Long> list = new ArrayList<>();
+        list.add(newMember.getId());
+
+
+
+        //when
+        memberRepository.batchRemoveMember(list);
+
+        em.flush();
+        em.clear();
+
+
+        //then
+        Member findMember = memberRepository.findMemberById(newMember.getId());
+        Article findArticle = articleRepository.findArticleById(article.getId());
+        MemberArticle findMemberArticle = memberArticleRepository.findMemberArticleByMemberIdArticleId(newMember.getId(), article.getId());
+
+
+        assertThat(findMember).isNull();
+        assertThat(findArticle).isNull();
+        assertThat(findMemberArticle).isNull();
+    }
+
+
+
+    @Test
+    @DisplayName("BULK 삭제 테스트 : 멤버1이 10개의 글을 가지고 있을 때 멤버1 삭제 → 글, 중간 테이블도 다 삭제된다.")
+    void bulkDelete2() {
+
+        int limit = 10;
+
+        System.out.println("START TEST ================================");
+        //given
+
+        Member newMember = Member.createNewMember("qweqwasdasdaase123e", "qweasdfasfvzxf123qwe", "Qweqwe", "qweasvasd123asdqwe@qweqwe");
+        memberRepository.saveMember(newMember);
+
+        for (int i = 0; i < limit; i++) {
+            Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
+            article.setWriter("qweqwasdasdaase123e");
+            MemberArticle memberArticle1 = new MemberArticle();
+            memberArticle1.addMemberArticle(newMember, article);
+        }
+
+
+        em.flush();
+        em.clear();
+
+        ArrayList<Long> list = new ArrayList<>();
+        list.add(newMember.getId());
+
+
+        //when
+        memberRepository.batchRemoveMember(list);
+
+        em.flush();
+        em.clear();
+
+
+        //then
+        Member findMember = memberRepository.findMemberById(newMember.getId());
+        List<MemberArticle> findMemberArticles = memberArticleRepository.findMemberArticleByMemberId(newMember.getId());
+
+        assertThat(findMember).isNull();
+        assertThat(findMemberArticles.size()).isEqualTo(0);
+    }
+
+
+
+    @Test
+    @DisplayName("BULK 삭제 테스트 : 멤버1이 10개의 글을 가지고 있고, 멤버2가 공유받았을 때, 멤버2가 탈퇴하면 글은 하나도 삭제되지 않는다.")
+    void bulkDelete3() {
+
+        int limit = 10;
+
+        System.out.println("START TEST ================================");
+        //given
+
+        Member newMember1 = Member.createNewMember("qweqwasdasdaase123e", "qweasdfasfvzxf123qwe", "Qweqwe", "qweasvasd123asdqwe@qweqwe");
+        Member newMember2 = Member.createNewMember("aazxcxzczxczxczxcasdasd", "aazxcxzczxczxczxcasdasd", "Qweqwe", "aazxcxzczxczxczxcasdasd@qweqwe");
+        memberRepository.saveMember(newMember1);
+        memberRepository.saveMember(newMember2);
+
+        for (int i = 0; i < limit; i++) {
+            Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
+            article.setWriter("qweqwasdasdaase123e");
+            MemberArticle memberArticle1 = new MemberArticle();
+            MemberArticle memberArticle2 = new MemberArticle();
+            memberArticle1.addMemberArticle(newMember1, article);
+            memberArticle2.addMemberArticle(newMember2, article);
+
+        }
+
+        em.flush();
+        em.clear();
+
+
+
+        ArrayList<Long> list = new ArrayList<>();
+        list.add(newMember2.getId());
+
+
+        //when
+        memberRepository.batchRemoveMember(list);
+
+        em.flush();
+        em.clear();
+
+
+        //then
+        Member findMember = memberRepository.findMemberById(newMember2.getId());
+        List<MemberArticle> removeMemberArticle = memberArticleRepository.findMemberArticleByMemberId(newMember2.getId());
+        List<MemberArticle> remainMemberArticle = memberArticleRepository.findMemberArticleByMemberId(newMember1.getId());
+
+        List<Long> articleIdList = remainMemberArticle.stream().map(MemberArticle::getId).collect(Collectors.toList());
+
+
+        assertThat(findMember).isNull();
+        assertThat(removeMemberArticle.size()).isEqualTo(0);
+        assertThat(remainMemberArticle.size()).isEqualTo(limit);
+        assertThat(articleIdList.size()).isEqualTo(limit);
 
     }
 
