@@ -138,3 +138,6 @@
 - [기능 개선] 동일 컨트롤러 1회 접속 시, CSS/JS 에러 등으로 최대 컨트롤러 3회 이상 요청되는 문제 해결(CDN에서 가져오는 JS를 직접 받아와서 temp.js를 만들었고, 컴파일 상태에서 바로 js 불러오도록 해서 해결) 
 - [신규 기능] 통계 기능 추가 (도메인, 컨트롤러, 리포지토리, 서비스, AOP, 스케쥴러, 세션 리스너 등 이용)
 - TODO // @AfterReturning을 사용하는 것이 AOP 적용에 적절한지 테스트 필요.
+
+# 22.02.17
+- [기능 개선] @AfterReturning을 사용하면 BindingResult에서 Exception이 발생하지 않아, BindingResult가 Error가 있어도 항상 Count가 되는 문제가 있었음. AOP에서 JoinPoint 인스턴스를 통해 BindingResult를 인스턴스로 가지는지 확인하고, BindingResult의 인스턴스에 에러가 있는지 Validation 로직하는 코드를 작성해서 해당 이슈 해결
