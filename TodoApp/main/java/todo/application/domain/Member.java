@@ -24,6 +24,10 @@ public class Member extends BaseEntity{
     private List<MemberArticle> articles = new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "toMember", fetch = FetchType.LAZY)
+    private List<RequestShareArticle> shareArticles = new ArrayList<>();
+
+
     //==  기본 정보 ==//
     @Column(unique = true)
     private String nickname;
@@ -31,10 +35,14 @@ public class Member extends BaseEntity{
     @Column(unique = true)
     private String joinId;
     private String password;
+
+    @Column(unique = true)
     private String email;
 
-    @Version
-    private Long version;
+
+    @Enumerated(EnumType.STRING)
+    private MemberGrade memberGrade;
+
 
     //== 생성 메서드==//
 
@@ -45,8 +53,21 @@ public class Member extends BaseEntity{
         member.joinId = joinId;
         member.password = password;
         member.email = email;
+        member.memberGrade = MemberGrade.NORMAL;
         return member;
     }
+
+    public static Member createAdminMember(String nickname, String joinId, String password, String email) {
+
+        Member member = new Member();
+        member.nickname = nickname;
+        member.joinId = joinId;
+        member.password = password;
+        member.email = email;
+        member.memberGrade = MemberGrade.ADMIN;
+        return member;
+    }
+
 
 
     //== 연관관계 편의 메서드==//
