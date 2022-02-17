@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="admin/fragments/header :: header"></head>
+
+
+<body class="sb-nav-fixed">
+
+
+<!-- TOP NAV-->
+<div th:replace="admin/fragments/navigator :: topNav"></div>
+<div th:replace="admin/fragments/navigator :: sideNav"></div>
+
+
+
+<!--    나브-->
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Dashboard</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
+                        <div class="row">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-primary text-white mb-4">
+                                    <div class="card-body">Primary Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-warning text-white mb-4">
+                                    <div class="card-body">Warning Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-success text-white mb-4">
+                                    <div class="card-body">Success Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-danger text-white mb-4">
+                                    <div class="card-body">Danger Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="row">
+                            <!--      Area chart 넣기-->
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+
+                                        작성된 ToDo List
+                                    </div>
+                                    <div class="card-body"><canvas id="writeCreatedNumber" width="100%" height="70"></canvas></div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+
+                                        방문자수
+                                    </div>
+                                    <div class="card-body"><canvas id="viewChart" width="100%" height="70"></canvas></div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+
+                                        로그인 방문자수
+                                    </div>
+                                    <div class="card-body"><canvas id="loginViewChart" width="100%" height="70"></canvas></div>
+                                </div>
+                            </div>
+
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+
+                                        회원 가입 수
+                                    </div>
+                                    <div class="card-body"><canvas id="userJoinChart" width="100%" height="70"></canvas></div>
+                                </div>
+                            </div>
+
+
+
+
+
+                        <!-- 테이블 자리-->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                회원 가입 현황
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple" >
+                                    <thead>
+                                        <tr>
+                                            <th>Nickname</th>
+                                            <th>Join Id</th>
+                                            <th>E-mail</th>
+                                            <th>Join Date</th>
+
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Nickname</th>
+                                            <th>Join Id</th>
+                                            <th>E-mail</th>
+                                            <th>Join Date</th>
+
+                                        </tr>
+                                    </tfoot>
+                                    <tbody  >
+                                    <tr th:each="member: ${memberDtos}" >
+                                            <td th:value="${member.nickname}" th:text="${member.nickname}"></td>
+                                            <td th:value="${member.joinId}" th:text="${member.joinId}">System Architect</td>
+                                            <td th:value="${member.email}" th:text="${member.email}">Edinburgh</td>
+                                            <td th:value="${member.joinDate}" th:text="${member.joinDate}">61</td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+
+
+                <footer th:replace="admin/fragments/footer :: foo"></footer>
+
+            </div>
+        </div>
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="bootstrap/admin/js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+
+        <!--        테이블 정렬 함수-->
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+        <script th:inline="javascript">
+            window.addEventListener('DOMContentLoaded', event => {
+            // Simple-DataTables
+            // https://github.com/fiduswriter/Simple-DataTables/wiki
+
+            const datatablesSimple = document.getElementById('datatablesSimple');
+            const datatablesSimple2 = [[${memberDtos}]]
+            if (datatablesSimple) {
+            new simpleDatatables.DataTable(datatablesSimple);
+            }
+            });
+
+        </script>
+
+
+        <!--        차트 표시 함수-->
+
+        <script th:inline="javascript">
+            // Set new default font family and font color to mimic Bootstrap's default styling
+            // Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+            // Chart.defaults.global.defaultFontColor = '#292b2c';
+
+            // UserJoin
+            let date = [];
+            let viewData = [];
+            let loginViewData = [];
+            let userJoinData = [];
+            let writeCreatedData = [];
+
+
+            [# th:each="dto : ${dtos}"]
+            date.push([[${dto.date}]]);
+            viewData.push([[${dto.view}]]);
+            loginViewData.push([[${dto.loginView}]]);
+            userJoinData.push([[${dto.userJoin}]]);
+            writeCreatedData.push([[${dto.writeCreatedNumber}]]);
+
+            [/]
+
+
+            // Area Chart 만들기
+            var ctx= document.getElementById("viewChart");
+            var myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: date,
+                    datasets: [{
+                        label: "방문수",
+                        lineTension: 0.3,
+
+
+                        // 줄용
+                        backgroundColor: "rgba(250, 177, 82, 0.2)",
+                        borderColor: "rgba(250, 177, 82, 1)",
+                        pointRadius: 5,
+
+                        // 동그라미용
+                        pointBackgroundColor: "rgba(250, 177, 82, 1)",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+
+
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(250, 177, 82, 1)",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
+                        data: viewData,
+                    }],
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            time: {
+                                unit: 'date'
+                            },
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: {
+                                maxTicksLimit: 7
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: Math.max.apply(null, viewData),
+                                maxTicksLimit: 5
+                            },
+                            gridLines: {
+                                color: "rgba(0, 0, 0, .125)",
+                            }
+                        }],
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+
+            var ctx2 = document.getElementById("userJoinChart");
+            var myLineChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: date,
+                    datasets: [{
+                        label: "신규 회원",
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(82, 250, 90, 0.2)",
+                        borderColor: "rgba(82, 250, 90, 1)",
+                        pointRadius: 5,
+                        pointBackgroundColor: "rgba(82, 250, 90, 1)",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(82, 250, 90, 1)",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
+                        data: userJoinData,
+                    }],
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            time: {
+                                unit: 'date'
+                            },
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: {
+                                maxTicksLimit: 7
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: Math.max.apply(null, userJoinData),
+                                maxTicksLimit: 5
+                            },
+                            gridLines: {
+                                color: "rgba(0, 0, 0, .125)",
+                            }
+                        }],
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+
+
+
+            var ctx3 = document.getElementById("loginViewChart");
+            var myLineChart = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: date,
+                    datasets: [{
+                        label: "로그인 방문자 수",
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(2,117,216,0.2)",
+                        borderColor: "rgba(2,117,216,1)",
+                        pointRadius: 5,
+                        pointBackgroundColor: "rgba(2,117,216,1)",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
+                        data: loginViewData,
+                    }],
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            time: {
+                                unit: 'date'
+                            },
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: {
+                                maxTicksLimit: 7
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: Math.max.apply(null, loginViewData),
+                                maxTicksLimit: 5
+                            },
+                            gridLines: {
+                                color: "rgba(0, 0, 0, .125)",
+                            }
+                        }],
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+
+
+            var ctx4 = document.getElementById("writeCreatedNumber");
+            var myLineChart = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels: date,
+                    datasets: [{
+                        label: "작성 수",
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(250, 87, 87, 0.2)",
+                        borderColor: "rgba(250, 87, 87, 1)",
+                        pointRadius: 5,
+                        pointBackgroundColor: "rgba(250, 87, 87, 1)",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(250, 87, 87, 1)",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
+                        data: writeCreatedData,
+                    }],
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            time: {
+                                unit: 'date'
+                            },
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: {
+                                maxTicksLimit: 7
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: Math.max.apply(null, writeCreatedData),
+                                maxTicksLimit: 5
+                            },
+                            gridLines: {
+                                color: "rgba(0, 0, 0, .125)",
+                            }
+                        }],
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+
+
+
+        </script>
+
+
+
+
+
+
+    </body>
+</html>
