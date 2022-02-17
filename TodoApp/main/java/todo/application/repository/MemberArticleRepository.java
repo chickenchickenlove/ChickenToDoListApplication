@@ -25,10 +25,27 @@ import static todo.application.domain.QMemberArticle.memberArticle;
 @Transactional(readOnly = true)
 public class MemberArticleRepository {
 
+    //DI
 
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+
+
+    //== 단건 조회==//
+
+    public MemberArticle findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(Long memberId, Long articleId) {
+
+
+        return queryFactory.selectFrom(memberArticle)
+                .join(memberArticle.member, member).fetchJoin()
+                .where(memberArticle.member.id.eq(memberId),
+                        memberArticle.article.id.eq(articleId),
+                        memberArticle.article.writer.eq(memberArticle.member.nickname))
+                .fetchOne();
+
+
+    }
 
     public MemberArticle findMemberArticleByMemberIdArticleId(Long memberId, Long articleId) {
         return queryFactory.selectFrom(memberArticle)
@@ -37,6 +54,18 @@ public class MemberArticleRepository {
                 .fetchOne();
     }
 
+
+
+    //== 리스트 조회==//
+
+    public List<MemberArticle> findMemberArticleByMemberId(Long memberId) {
+        return queryFactory.selectFrom(memberArticle)
+                .join(memberArticle.article, article).fetchJoin()
+                .where(memberArticle.member.id.eq(memberId))
+                .fetch();
+    }
+
+    //== 슬라이싱 조회==//
 
     public Slice<MemberArticle> findSliceArticleByMemberIdNotCompleted(Long memberId, Pageable pageable) {
 
@@ -63,7 +92,6 @@ public class MemberArticleRepository {
             if (--limit == 0) {
                 break;
             }
-
         }
 
         return new SliceImpl<>(returnList, pageable, hasNextMemberArticleTrue(result, pageable));
@@ -77,7 +105,6 @@ public class MemberArticleRepository {
             throw new IllegalStateException("잘못된 상태입니다.");
         }
 
-
         List<MemberArticle> result = queryFactory.selectFrom(memberArticle)
                 .leftJoin(memberArticle.article, article).fetchJoin()
                 .where(memberArticle.member.id.eq(memberId), memberArticle.article.status.eq(ArticleStatus.COMPLETE))
@@ -89,44 +116,18 @@ public class MemberArticleRepository {
         List<MemberArticle> returnList = new ArrayList<>();
         int limit = pageable.getPageSize();
 
-
         for (MemberArticle memberArticle : result) {
             returnList.add(memberArticle);
             if (--limit == 0) {
                 break;
             }
-
         }
 
         return new SliceImpl<>(returnList, pageable, hasNextMemberArticleTrue(result, pageable));
     }
 
 
-
-    public MemberArticle findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(Long memberId, Long articleId) {
-
-
-        return queryFactory.selectFrom(memberArticle)
-                .join(memberArticle.member, member).fetchJoin()
-                .where(memberArticle.member.id.eq(memberId),
-                        memberArticle.article.id.eq(articleId),
-                        memberArticle.article.writer.eq(memberArticle.member.nickname))
-                .fetchOne();
-
-
-    }
-
-
-
-
-
-
-
-
-
-
     // Slice용 추가
-
     private boolean hasNextMemberArticleTrue(List<MemberArticle> result, Pageable pageable) {
         return result.size() > pageable.getPageSize() ? true : false;
     }
