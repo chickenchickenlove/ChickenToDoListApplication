@@ -1,32 +1,35 @@
 package todo.application.repository;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.QueryFactory;
-import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.sun.xml.bind.v2.TODO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.jpa.repository.support.Querydsl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import todo.application.domain.*;
+import todo.application.repository.dto.MemberAdminDto;
+import todo.application.repository.dto.MemberDto;
 
 import javax.persistence.EntityManager;
-import javax.swing.text.html.parser.Entity;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static todo.application.domain.QArticle.article;
 import static todo.application.domain.QMember.*;
 import static todo.application.domain.QMemberArticle.*;
 
 
 @Repository
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberRepository {
 
     // DI
@@ -34,9 +37,8 @@ public class MemberRepository {
     private final JPAQueryFactory queryFactory;
 
     // 저장 로직
-    @Transactional(readOnly = false)
+    @Transactional
     public Long saveMember(Member member) {
-        //TODO 회원 가입, 중복 ID 가입 불가능
         em.persist(member);
         return member.getId();
     }
@@ -53,10 +55,9 @@ public class MemberRepository {
         return em.find(Member.class, id);
     }
 
-    public Member findMemberByEmailAndJoinId(String email, String joinID) {
+    public Member findMemberByEmail(String email) {
         return queryFactory.selectFrom(member)
-                .where(member.email.eq(email).and(member.joinId.eq(joinID)))
-                .fetchOne();
+                .where(member.email.eq(email)).fetchOne();
     }
 
 
@@ -66,65 +67,15 @@ public class MemberRepository {
         return queryFactory.selectFrom(member).fetch();
     }
 
-    public List<Member> findMemberByJoinId(String JoinId) {
-        return queryFactory.selectFrom(member).where(getUserIdQuery(JoinId)).fetch();
+    public Member findMemberByJoinId(String JoinId) {
+        return queryFactory.selectFrom(member).where(getUserIdQuery(JoinId)).fetchOne();
 
     }
-
 
     public List<Member> findMemberByNickname(String nickname) {
         return queryFactory.selectFrom(member)
                 .where(member.nickname.eq(nickname)).fetch();
     }
-
-    // 유일 조건이기 때문에 Member만 반환한다.
-    public Member findMemberByEmail(String email) {
-        return queryFactory.selectFrom(QMember.member)
-                .where(QMember.member.email.eq(email)).fetchOne();
-
-    }
-
-
-    public Slice<Member> findMemberByMemberSearch(MemberSearch memberSearch, Pageable pageable) {
-
-        BooleanBuilder nicknameOrUserId = getNicknameOrUserId(memberSearch);
-
-        if (nicknameOrUserId.getValue() == null) {
-            return new SliceImpl<Member>(new ArrayList<Member>());
-        }
-
-        List<Member> result = queryFactory.selectFrom(member)
-                .where(nicknameOrUserId)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-
-        List<Member> returnList = new ArrayList<>();
-        int limit = pageable.getPageSize();
-
-
-        for (Member member : result) {
-            returnList.add(member);
-            if (--limit == 0) {
-                break;
-            }
-
-        }
-
-
-        return new SliceImpl<Member>(returnList, pageable, hasNextMember(result, pageable));
-
-
-    }
-
-
-    private boolean hasNextMember(List<Member> result, Pageable pageable) {
-        return result.size() > pageable.getPageSize() ? true : false;
-    }
-
-
-
 
 
     public List<Member> findMemberByMemberName(String nickname) {
@@ -134,24 +85,128 @@ public class MemberRepository {
     }
 
 
-    //== MemberArticle 조회==//
+    //== 회원 DTO 조회==//
 
-    public List<MemberArticle> findMemberArticleByMemberId(Long memberId) {
-        return queryFactory.selectFrom(memberArticle)
-                .join(memberArticle.member)
-                .where(memberArticle.member.id.eq(memberId)).fetch();
+
+    public List<MemberAdminDto> findMemberAdminDto() {
+
+        List<MemberDto> tempList = queryFactory.select(Projections.constructor(MemberDto.class,
+                        member.id,
+                        member.nickname,
+                        member.joinId,
+                        member.email,
+                        member.createdTime))
+                .from(member).fetch();
+
+        // LocalDateTime -> String 변환
+
+        return tempList.stream().map(memberDto ->
+            new MemberAdminDto(
+                    memberDto.getId(),
+                    memberDto.getNickname(),
+                    memberDto.getJoinId(),
+                    memberDto.getEmail(),
+                    memberDto.getJoinDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+        ).collect(Collectors.toList());
+
+    }
+
+
+    //== Bulk 연산 ==//
+
+    // 회원 등급 일괄 조정
+    @Transactional
+    public void bulkUpdateAllMemberGradeNormal() {
+        queryFactory.update(member)
+                .set(member.memberGrade, MemberGrade.NORMAL)
+                .execute();
+    }
+
+
+    // 회원 일괄 삭제
+    @Transactional
+    public void batchRemoveMember(List<Long> memberIds) {
+
+
+        // 지울 닉네임을 가져옴
+        List<String> writeNickname = queryFactory.select(member.nickname)
+                .from(member)
+                .where(member.id.in(memberIds))
+                .fetch();
+
+
+        // 연관관계 주인 먼저 삭제
+        queryFactory
+                .delete(memberArticle)
+                .where(memberArticle.member.id.in(memberIds))
+                .execute();
+
+
+        // 나머지 삭제 (지울 닉네임 == 글작성자)
+        queryFactory
+                .delete(article)
+                .where(article.writer.in(writeNickname))
+                .execute();
+
+        // memberId가 같은 member 삭제
+        queryFactory
+                .delete(member)
+                .where(member.id.in(memberIds))
+                .execute();
     }
 
 
 
 
+
+
+    //== 슬라이싱 조회==//
+
+    public Slice<Member> findMemberByMemberSearch(MemberSearch memberSearch, Pageable pageable) {
+
+        BooleanBuilder nicknameOrUserId = getNicknameOrUserId(memberSearch);
+
+        if (nicknameOrUserId.getValue() == null) {
+            return new SliceImpl<>(new ArrayList<>());
+        }
+
+        List<Member> result = queryFactory.selectFrom(member)
+                .where(nicknameOrUserId)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        List<Member> returnList = new ArrayList<>();
+        int limit = pageable.getPageSize();
+
+        for (Member member : result) {
+            returnList.add(member);
+            if (--limit == 0) {
+                break;
+            }
+
+        }
+
+        return new SliceImpl<>(returnList, pageable, hasNextMember(result, pageable));
+    }
+
+
+
+
+    //== 비즈니스 로직==//
+    private boolean hasNextMember(List<Member> result, Pageable pageable) {
+        return result.size() > pageable.getPageSize();
+    }
+
+
     //== Boolean Expression==//
+
     private BooleanExpression getUserIdQuery(String joinId) {
         return joinId != null ? member.joinId.eq(joinId) : null;
     }
 
     private BooleanExpression getUserIdLikeQuery(String joinId) {
-        return joinId != null ? member.joinId.like(joinId) : null;
+        return StringUtils.hasText(joinId) ? member.joinId.like("%" + joinId + "%") : null;
     }
 
 
@@ -161,7 +216,7 @@ public class MemberRepository {
 
 
     private BooleanExpression getNicknameLikeQuery(String nickname) {
-        return nickname != null ? member.nickname.like(nickname) : null;
+        return StringUtils.hasText(nickname) ? member.nickname.like("%" + nickname + "%") : null;
     }
 
     private BooleanBuilder getNicknameOrUserId(MemberSearch memberSearch) {
@@ -174,7 +229,6 @@ public class MemberRepository {
         if (getUserIdLikeQuery(memberSearch.getJoinId()) != null) {
             builder.or(getUserIdLikeQuery(memberSearch.getJoinId()));
         }
-
 
         return builder;
     }
