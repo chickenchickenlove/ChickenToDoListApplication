@@ -21,7 +21,7 @@
                                     <div th:errors="*{writeTitle}" th:style="'color:red'"></div>
                                 </div>
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" th:field="${article.dueDate}" placeholder="언제까지 해야하는지를 알려주세요! "/>
+                                    <input type="text" class="form-control" th:field="${article.dueDate}" autocomplete="off" placeholder=" "/>
                                     <label th:for="dueDate"> Due Date </label>
                                     <div th:errors="*{dueDate}" th:style="'color:red'"></div>
                                 </div>
@@ -59,7 +59,21 @@
         <!-- Bootstrap core JS-->
         <script src="/bootstrap/js/temp.js"></script>
         <!-- Core theme JS-->
-        <script th:src="@{/bootstrap/js/scripts.js}"></script>
+        <script src="/bootstrap/js/scripts.js"></script>
+<!--        <script th:src="@{/bootstrap/js/scripts.js}"></script>-->
+
+        <script>
+            $(function(){
+                $('#dueDate').datepicker({
+                    lang:'ko',
+                    dateFormat: 'yy.mm.dd',
+                    monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], //달력의 월 부분 텍스트
+                    monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'], //달력의 월 부분 Tooltip
+                    dayNamesMin: ['일','월','화','수','목','금','토'], //달력의 요일 텍스트
+                    dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 Tooltip
+                });
+            })
+        </script>
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <!-- * *                               SB Forms JS                               * *-->
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
