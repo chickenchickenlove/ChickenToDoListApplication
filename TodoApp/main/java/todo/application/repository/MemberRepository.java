@@ -5,6 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -25,11 +26,13 @@ import java.util.stream.Collectors;
 import static todo.application.domain.QArticle.article;
 import static todo.application.domain.QMember.*;
 import static todo.application.domain.QMemberArticle.*;
+import static todo.application.domain.QRequestShareArticle.requestShareArticle;
 
 
 @Repository
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MemberRepository {
 
     // DI
@@ -56,8 +59,16 @@ public class MemberRepository {
     }
 
     public Member findMemberByEmail(String email) {
-        return queryFactory.selectFrom(member)
-                .where(member.email.eq(email)).fetchOne();
+
+        log.info("find member email = {}", email);
+
+        Member member = queryFactory.selectFrom(QMember.member)
+                .where(QMember.member.email.eq(email)).fetchOne();
+
+        log.info("find Member = {}", member);
+
+        return member;
+
     }
 
 
@@ -131,7 +142,7 @@ public class MemberRepository {
         // 지울 닉네임을 가져옴
         List<String> writeNickname = queryFactory.select(member.nickname)
                 .from(member)
-                .where(member.id.in(memberIds))
+                .where(member.id.in(memberIds).and(member.memberGrade.eq(MemberGrade.NORMAL)))
                 .fetch();
 
 
@@ -148,11 +159,21 @@ public class MemberRepository {
                 .where(article.writer.in(writeNickname))
                 .execute();
 
+        queryFactory
+                .delete(requestShareArticle)
+                .where(requestShareArticle.toMember.id.in(memberIds))
+                .execute();
+
+
         // memberId가 같은 member 삭제
         queryFactory
                 .delete(member)
-                .where(member.id.in(memberIds))
+                .where(member.id.in(memberIds).and(member.memberGrade.eq(MemberGrade.NORMAL)))
                 .execute();
+
+
+
+
     }
 
 
