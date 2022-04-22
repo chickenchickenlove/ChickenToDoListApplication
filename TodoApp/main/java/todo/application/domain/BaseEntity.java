@@ -16,6 +16,7 @@ public class BaseEntity {
     @Column(updatable = false, insertable = true)
     private LocalDateTime createdTime;
 
+    @Column(updatable = true, insertable = false)
     private LocalDateTime lastModifiedTime;
 
     @PrePersist

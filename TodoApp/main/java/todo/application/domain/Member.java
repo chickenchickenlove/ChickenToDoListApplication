@@ -23,10 +23,8 @@ public class Member extends BaseEntity{
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<MemberArticle> articles = new ArrayList<>();
 
-
     @OneToMany(mappedBy = "toMember", fetch = FetchType.LAZY)
     private List<RequestShareArticle> shareArticles = new ArrayList<>();
-
 
     //==  기본 정보 ==//
     @Column(unique = true)
@@ -39,13 +37,10 @@ public class Member extends BaseEntity{
     @Column(unique = true)
     private String email;
 
-
     @Enumerated(EnumType.STRING)
     private MemberGrade memberGrade;
 
-
     //== 생성 메서드==//
-
     public static Member createNewMember(String nickname, String joinId, String password, String email) {
 
         Member member = new Member();
@@ -67,17 +62,5 @@ public class Member extends BaseEntity{
         member.memberGrade = MemberGrade.ADMIN;
         return member;
     }
-
-
-
-    //== 연관관계 편의 메서드==//
-
-
-    //== 비즈니스 로직 메서드==//
-
-
-
-
-
 
 }

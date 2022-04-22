@@ -26,8 +26,6 @@ public class VisitorView extends BaseEntity{
     private Long userJoin; // 회원 가입 수
     private Long writeCreatedNumber; // 글 생성 수
 
-
-
     //= 비즈니스 메서드 ==//
     public Long addView(Long view) {
         if (view >= this.view) {
@@ -45,7 +43,6 @@ public class VisitorView extends BaseEntity{
         throw new IllegalStateException("예외 발생");
     }
 
-
     public Long addUserJoin(Long userJoin) {
         if (userJoin >= this.userJoin) {
             this.userJoin = userJoin;
@@ -53,7 +50,6 @@ public class VisitorView extends BaseEntity{
         }
         throw new IllegalStateException("예외 발생");
     }
-
 
     public Long addWriteCreatedNumber(Long writeCreatedNumber) {
         if (writeCreatedNumber >= this.writeCreatedNumber) {
@@ -63,15 +59,18 @@ public class VisitorView extends BaseEntity{
         throw new IllegalStateException("예외 발생");
     }
 
-
     public Long getTotalValue() {
         return view + loginView + userJoin + writeCreatedNumber;
 
     }
 
-
-
-
+    public void setTest(LocalDate date, Long view, Long loginView, Long userJoin, Long writeCreatedNumber ) {
+        this.date = date;
+        this.view = view;
+        this.loginView = loginView;
+        this.userJoin = userJoin;
+        this.writeCreatedNumber = writeCreatedNumber;
+    }
 
     //== 생성 메서드 ==//
     public static VisitorView createVisitorView() {
@@ -83,15 +82,7 @@ public class VisitorView extends BaseEntity{
         visitorView.userJoin = 0L;
         visitorView.writeCreatedNumber = 0L;
 
-
-
-
         return visitorView;
     }
-
-
-
-
-
 
 }

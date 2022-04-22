@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Setter
 @RequiredArgsConstructor
 //@NoArgsConstructor
-public class RequestShareArticle extends BaseEntity{
+public class RequestShareArticle extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -24,12 +24,10 @@ public class RequestShareArticle extends BaseEntity{
     @ManyToOne
     private Member toMember;
 
-
     //== 필드 가진다==//
     private Long fromMemberId;
     private String fromMemberNickname;
     private String articleTitle;
-
 
     //== 생성 메서드==//
     public static RequestShareArticle createRequestShareArticle(Member toMember, Member fromMember, Article shareArticle) {
@@ -39,25 +37,10 @@ public class RequestShareArticle extends BaseEntity{
         requestShareArticle.toMember = toMember;
         requestShareArticle.article = shareArticle;
 
-
         requestShareArticle.fromMemberId = fromMember.getId();
         requestShareArticle.fromMemberNickname = fromMember.getNickname();
         requestShareArticle.articleTitle = shareArticle.getWriteTitle();
 
         return requestShareArticle;
     }
-
-    //== 연관관계 편의 메서드==//
-
-
-
-    //== 비즈니스 로직 메서드==//
-    /**
-     * 1. 요청이 온다
-     * 2. 요청이 오면, 확인한다
-     * 3. 확인하면
-     */
-
-
-
 }
