@@ -26,25 +26,17 @@ import static todo.application.domain.QMemberArticle.memberArticle;
 public class MemberArticleRepository {
 
     //DI
-
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
-
-
     //== 단건 조회==//
-
     public MemberArticle findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(Long memberId, Long articleId) {
-
-
         return queryFactory.selectFrom(memberArticle)
                 .join(memberArticle.member, member).fetchJoin()
                 .where(memberArticle.member.id.eq(memberId),
                         memberArticle.article.id.eq(articleId),
                         memberArticle.article.writer.eq(memberArticle.member.nickname))
                 .fetchOne();
-
-
     }
 
     public MemberArticle findMemberArticleByMemberIdArticleId(Long memberId, Long articleId) {
@@ -54,10 +46,7 @@ public class MemberArticleRepository {
                 .fetchOne();
     }
 
-
-
     //== 리스트 조회==//
-
     public List<MemberArticle> findMemberArticleByMemberId(Long memberId) {
         return queryFactory.selectFrom(memberArticle)
                 .join(memberArticle.article, article).fetchJoin()
@@ -66,14 +55,12 @@ public class MemberArticleRepository {
     }
 
     //== 슬라이싱 조회==//
-
     public Slice<MemberArticle> findSliceArticleByMemberIdNotCompleted(Long memberId, Pageable pageable) {
 
         // 방어 코드
         if (pageable.getPageSize() == 0) {
             throw new IllegalStateException("잘못된 상태입니다.");
         }
-
 
         List<MemberArticle> result = queryFactory.selectFrom(memberArticle)
                 .leftJoin(memberArticle.article, article).fetchJoin()
@@ -99,7 +86,6 @@ public class MemberArticleRepository {
 
 
     public Slice<MemberArticle> findSliceArticleByMemberIdCompleted(Long memberId, Pageable pageable) {
-
         // 방어 코드
         if (pageable.getPageSize() == 0) {
             throw new IllegalStateException("잘못된 상태입니다.");
@@ -126,13 +112,9 @@ public class MemberArticleRepository {
         return new SliceImpl<>(returnList, pageable, hasNextMemberArticleTrue(result, pageable));
     }
 
-
     // Slice용 추가
     private boolean hasNextMemberArticleTrue(List<MemberArticle> result, Pageable pageable) {
         return result.size() > pageable.getPageSize() ? true : false;
     }
-
-
-
 
 }

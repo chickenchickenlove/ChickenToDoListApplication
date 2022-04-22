@@ -46,12 +46,9 @@ public class MemberRepository {
         return member.getId();
     }
 
-
-
     //== 회원 단건 조회==//
     public Member findMemberByJoinIdOneMan(String JoinId) {
         return queryFactory.selectFrom(member).where(getUserIdQuery(JoinId)).fetchOne();
-
     }
 
     public Member findMemberById(Long id) {
@@ -59,16 +56,9 @@ public class MemberRepository {
     }
 
     public Member findMemberByEmail(String email) {
-
-        log.info("find member email = {}", email);
-
         Member member = queryFactory.selectFrom(QMember.member)
                 .where(QMember.member.email.eq(email)).fetchOne();
-
-        log.info("find Member = {}", member);
-
         return member;
-
     }
 
 
@@ -88,19 +78,14 @@ public class MemberRepository {
                 .where(member.nickname.eq(nickname)).fetch();
     }
 
-
     public List<Member> findMemberByMemberName(String nickname) {
         return queryFactory.selectFrom(member)
                 .where((getNicknameLikeQuery(nickname)))
                 .fetch();
     }
 
-
     //== 회원 DTO 조회==//
-
-
     public List<MemberAdminDto> findMemberAdminDto() {
-
         List<MemberDto> tempList = queryFactory.select(Projections.constructor(MemberDto.class,
                         member.id,
                         member.nickname,
@@ -119,12 +104,9 @@ public class MemberRepository {
                     memberDto.getEmail(),
                     memberDto.getJoinDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
         ).collect(Collectors.toList());
-
     }
 
-
     //== Bulk 연산 ==//
-
     // 회원 등급 일괄 조정
     @Transactional
     public void bulkUpdateAllMemberGradeNormal() {
@@ -133,25 +115,20 @@ public class MemberRepository {
                 .execute();
     }
 
-
     // 회원 일괄 삭제
     @Transactional
     public void batchRemoveMember(List<Long> memberIds) {
-
-
         // 지울 닉네임을 가져옴
         List<String> writeNickname = queryFactory.select(member.nickname)
                 .from(member)
                 .where(member.id.in(memberIds).and(member.memberGrade.eq(MemberGrade.NORMAL)))
                 .fetch();
 
-
         // 연관관계 주인 먼저 삭제
         queryFactory
                 .delete(memberArticle)
                 .where(memberArticle.member.id.in(memberIds))
                 .execute();
-
 
         // 나머지 삭제 (지울 닉네임 == 글작성자)
         queryFactory
@@ -170,17 +147,7 @@ public class MemberRepository {
                 .delete(member)
                 .where(member.id.in(memberIds).and(member.memberGrade.eq(MemberGrade.NORMAL)))
                 .execute();
-
-
-
-
     }
-
-
-
-
-
-
     //== 슬라이싱 조회==//
 
     public Slice<Member> findMemberByMemberSearch(MemberSearch memberSearch, Pageable pageable) {
@@ -207,21 +174,15 @@ public class MemberRepository {
             }
 
         }
-
         return new SliceImpl<>(returnList, pageable, hasNextMember(result, pageable));
     }
-
-
-
 
     //== 비즈니스 로직==//
     private boolean hasNextMember(List<Member> result, Pageable pageable) {
         return result.size() > pageable.getPageSize();
     }
 
-
     //== Boolean Expression==//
-
     private BooleanExpression getUserIdQuery(String joinId) {
         return joinId != null ? member.joinId.eq(joinId) : null;
     }
@@ -230,11 +191,9 @@ public class MemberRepository {
         return StringUtils.hasText(joinId) ? member.joinId.like("%" + joinId + "%") : null;
     }
 
-
     private BooleanExpression getNicknameQuery(String nickname) {
         return nickname != null ? member.nickname.eq(nickname) : null;
     }
-
 
     private BooleanExpression getNicknameLikeQuery(String nickname) {
         return StringUtils.hasText(nickname) ? member.nickname.like("%" + nickname + "%") : null;
@@ -253,7 +212,4 @@ public class MemberRepository {
 
         return builder;
     }
-
-
-
 }

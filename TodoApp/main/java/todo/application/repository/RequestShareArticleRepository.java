@@ -27,12 +27,10 @@ public class RequestShareArticleRepository {
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
 
-
     public Long saveRequestShareArticle(RequestShareArticle requestShareArticle) {
         em.persist(requestShareArticle);
         return requestShareArticle.getId();
     }
-
 
     public RequestShareArticle findRequestShareArticle(Long saveRequestShareArticleId) {
         return em.find(RequestShareArticle.class, saveRequestShareArticleId);
@@ -48,17 +46,19 @@ public class RequestShareArticleRepository {
                 .fetchOne();
     }
 
-
-
+    // memberId, requestShareArticleId
+    public RequestShareArticle findRequestShareArticleByMemberIdRequestShareArticleId(Long memberId, Long requestShareArticleId) {
+        return queryFactory.selectFrom(requestShareArticle)
+                .where(requestShareArticle.toMember.id.eq(memberId), requestShareArticle.id.eq(requestShareArticleId))
+                .fetchOne();
+    }
 
     public Slice<RequestShareArticle> findSliceRequestShareArticle(Long memberId, Pageable pageable) {
-
         List<RequestShareArticle> resultList = queryFactory.selectFrom(requestShareArticle)
                 .where(requestShareArticle.toMember.id.eq(memberId))
                 .orderBy(requestShareArticle.id.asc())
                 .offset(pageable.getOffset()).limit(pageable.getPageSize() + 1 )
                 .fetch();
-
 
         boolean hasNextPage = hasNextSliceRequestShareArticle(resultList, pageable);
         if (resultList.size() == pageable.getPageSize() + 1) {
@@ -68,16 +68,8 @@ public class RequestShareArticleRepository {
         return new SliceImpl<>(resultList, pageable, hasNextPage);
     }
 
-
-
-
-
     //== Validation 로직==//
-
     private boolean hasNextSliceRequestShareArticle(List<RequestShareArticle> resultList, Pageable pageable){
         return resultList.size() > pageable.getPageSize();
     }
-
-
-
 }
