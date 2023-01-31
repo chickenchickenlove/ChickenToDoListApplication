@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import todo.application.domain.Member;
+import todo.application.repository.MemberRepository;
 import todo.application.repository.MemberSearch;
 import todo.application.repository.dto.MemberAdminDto;
 

@@ -11,6 +11,7 @@ import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 import todo.application.repository.ArticleRepositoryImpl;
 import todo.application.repository.MemberArticleRepository;
+import todo.application.repository.MemberRepository;
 
 import java.time.LocalDate;
 import java.util.Collections;
