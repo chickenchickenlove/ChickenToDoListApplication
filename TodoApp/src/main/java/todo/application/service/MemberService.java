@@ -4,21 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import todo.application.domain.Member;
-import todo.application.domain.MemberArticle;
-import todo.application.repository.MemberArticleRepository;
-import todo.application.repository.MemberRepository;
 import todo.application.repository.MemberSearch;
 import todo.application.repository.dto.MemberAdminDto;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 

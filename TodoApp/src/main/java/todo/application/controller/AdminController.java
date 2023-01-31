@@ -7,8 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import todo.application.domain.Member;
-import todo.application.repository.MemberRepository;
 import todo.application.repository.dto.MemberAdminDto;
 import todo.application.repository.dto.ViewReadCountStaticalDto;
 import todo.application.service.MemberService;

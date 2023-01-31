@@ -2,18 +2,14 @@ package todo.application.set;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import todo.application.domain.Article;
 import todo.application.domain.Member;
-import todo.application.domain.MemberArticle;
 import todo.application.domain.VisitorView;
-import todo.application.repository.MemberRepository;
 import todo.application.repository.VisitorViewRepository;
 import todo.application.service.MemberService;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
-import java.util.UUID;
 
 //@Component
 @RequiredArgsConstructor

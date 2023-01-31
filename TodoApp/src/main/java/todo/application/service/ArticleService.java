@@ -2,8 +2,6 @@ package todo.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.controller.form.EditArticleForm;
@@ -13,7 +11,6 @@ import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 import todo.application.repository.ArticleRepositoryImpl;
 import todo.application.repository.MemberArticleRepository;
-import todo.application.repository.MemberRepository;
 
 import java.time.LocalDate;
 import java.util.Collections;

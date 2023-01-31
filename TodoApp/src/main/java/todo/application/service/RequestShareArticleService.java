@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 import todo.application.domain.RequestShareArticle;
-import todo.application.repository.MemberRepository;
 import todo.application.repository.RequestShareArticleRepository;
 
 @Service

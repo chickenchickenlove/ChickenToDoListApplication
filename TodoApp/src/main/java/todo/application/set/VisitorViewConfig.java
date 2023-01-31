@@ -1,11 +1,7 @@
 package todo.application.set;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import todo.application.domain.Member;
 import todo.application.domain.VisitorView;
-import todo.application.repository.MemberRepository;
 import todo.application.repository.VisitorViewRepository;
 
 import javax.annotation.PostConstruct;

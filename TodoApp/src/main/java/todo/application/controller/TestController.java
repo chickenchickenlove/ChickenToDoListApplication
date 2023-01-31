@@ -2,22 +2,15 @@ package todo.application.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import todo.application.domain.Article;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
-import todo.application.domain.RequestShareArticle;
 import todo.application.repository.ArticleRepositoryImpl;
-import todo.application.repository.MemberRepository;
 import todo.application.service.ArticleService;
 import todo.application.service.MemberArticleService;
 import todo.application.service.RequestShareArticleService;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.*;
 

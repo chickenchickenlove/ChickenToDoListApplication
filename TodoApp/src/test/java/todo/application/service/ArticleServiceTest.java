@@ -8,13 +8,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
-import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @Transactional

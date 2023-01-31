@@ -12,20 +12,19 @@ import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import todo.application.domain.*;
+import todo.application.domain.Member;
+import todo.application.domain.MemberGrade;
 import todo.application.repository.dto.MemberAdminDto;
 import todo.application.repository.dto.MemberDto;
 
-import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static todo.application.domain.QArticle.article;
-import static todo.application.domain.QMember.*;
-import static todo.application.domain.QMemberArticle.*;
+import static todo.application.domain.QMember.member;
+import static todo.application.domain.QMemberArticle.memberArticle;
 import static todo.application.domain.QRequestShareArticle.requestShareArticle;
 
 
@@ -35,14 +34,13 @@ import static todo.application.domain.QRequestShareArticle.requestShareArticle;
 @Slf4j
 public class MemberRepository {
 
-    // DI
-    private final EntityManager em;
     private final JPAQueryFactory queryFactory;
+    private final MemberJpaRepository jpaRepository;
 
     // 저장 로직
     @Transactional
     public Long saveMember(Member member) {
-        em.persist(member);
+        jpaRepository.save(member);
         return member.getId();
     }
 
@@ -52,20 +50,17 @@ public class MemberRepository {
     }
 
     public Member findMemberById(Long id) {
-        return em.find(Member.class, id);
+        return jpaRepository.findMemberById(id);
     }
 
     public Member findMemberByEmail(String email) {
-        Member member = queryFactory.selectFrom(QMember.member)
-                .where(QMember.member.email.eq(email)).fetchOne();
-        return member;
+        return jpaRepository.findMemberByEmail(email);
     }
 
 
     //== 회원 리스트 조회==//
-
     public List<Member> findAllMember() {
-        return queryFactory.selectFrom(member).fetch();
+        return jpaRepository.findAll();
     }
 
     public Member findMemberByJoinId(String JoinId) {
@@ -74,15 +69,9 @@ public class MemberRepository {
     }
 
     public List<Member> findMemberByNickname(String nickname) {
-        return queryFactory.selectFrom(member)
-                .where(member.nickname.eq(nickname)).fetch();
+        return jpaRepository.findMemberByNickname(nickname);
     }
 
-    public List<Member> findMemberByMemberName(String nickname) {
-        return queryFactory.selectFrom(member)
-                .where((getNicknameLikeQuery(nickname)))
-                .fetch();
-    }
 
     //== 회원 DTO 조회==//
     public List<MemberAdminDto> findMemberAdminDto() {

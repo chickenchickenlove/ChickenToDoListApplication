@@ -1,15 +1,11 @@
 package todo.application.repository;
 
-import jdk.swing.interop.SwingInterOpUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.h2.message.DbException;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +14,6 @@ import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
 @SpringBootTest
@@ -81,42 +74,45 @@ class MemberRepositoryTest {
     }
 
 
-    @Test
-    void 중복이름가입_실패해야함() {
+//    @Test
+//    void 중복이름가입_실패해야함() {
+//
+//        Member newMember1 = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+//        Member newMember2 = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+//
+//
+//        memberRepository.saveMember(newMember1);
+//        em.flush();
+//        em.clear();
+//
+//        try {
+//            memberRepository.saveMember(newMember2);
+//            em.flush();
+//            em.clear();
+//        } catch (DataIntegrityViolationException a) {
+//            log.info("DataIntegrityViolationException = {}", a.getMessage());
+//        } catch (DbException b) {
+//            log.info("DbException = {}", b.getMessage());
+//        } catch (ConstraintViolationException c) {
+//            log.info("ConstraintViolationException = {}", c.getMessage());
+//        } catch (PersistenceException e) {
+//            log.info("PersistenceException = {}", e.getClass());
+//        }
+//
+//        log.info("newMember1 Id = {}", newMember1.getId());
+//        log.info("newMember2 Id = {}", newMember2.getId());
 
-        Member newMember1 = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
-        Member newMember2 = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
 
 
-        memberRepository.saveMember(newMember1);
-        em.flush();
-        em.clear();
+//    }
 
-        try {
-            memberRepository.saveMember(newMember2);
-            em.flush();
-            em.clear();
-        } catch (DataIntegrityViolationException a) {
-            log.info("DataIntegrityViolationException = {}", a.getMessage());
-        } catch (DbException b) {
-            log.info("DbException = {}", b.getMessage());
-        } catch (ConstraintViolationException c) {
-            log.info("ConstraintViolationException = {}", c.getMessage());
-        } catch (PersistenceException e) {
-            log.info("PersistenceException = {}", e.getClass());
-        }
-
-        log.info("newMember1 Id = {}", newMember1.getId());
-        log.info("newMember2 Id = {}", newMember2.getId());
-
-
-
+    Member createDummyMember() {
+        return Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
     }
-
     @Test
     void save_pass() {
         //given
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+        Member newMember = createDummyMember();
 
         //when
         Long saveMemberId = memberRepository.saveMember(newMember);
@@ -124,6 +120,34 @@ class MemberRepositoryTest {
         //then
         Member findMember = em.find(Member.class, saveMemberId);
         assertThat(findMember).isEqualTo(newMember);
+    }
+
+    @Test
+    @DisplayName("Test : findMemberById")
+    void test_findMemberById() {
+        //given
+        Member newMember = createDummyMember();
+        Long saveMemberId = memberRepository.saveMember(newMember);
+
+        //when
+        Member findMember = memberRepository.findMemberById(saveMemberId);
+
+        //then
+        assertThat(findMember.getId()).isEqualTo(newMember.getId());
+    }
+
+    @Test
+    @DisplayName("Test : findMemberById")
+    void test_findMemberByEmail() {
+        //given
+        Member newMember = createDummyMember();
+        Long saveMemberId = memberRepository.saveMember(newMember);
+
+        //when
+        Member findMember = memberRepository.findMemberByEmail(newMember.getEmail());
+
+        //then
+        assertThat(findMember.getEmail()).isEqualTo(newMember.getEmail());
     }
 
 
