@@ -6,38 +6,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import todo.application.TestUtilsConstant;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
-@Slf4j
 class MemberTest {
 
 
     @Test
-    @Rollback(value = false)
-    void test() throws Exception{
+    void createMemberTest(){
 
-        // given + when
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
-
-
-        log.info("member = {}", newMember.toString());
+        // when
+        Member newMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME, TestUtilsConstant.MEMBER_JOINID,
+                TestUtilsConstant.PASSWORD, TestUtilsConstant.EMAIL);
 
         // then
-        Assertions.assertThat(newMember.getNickname()).isEqualTo("abc");
-        Assertions.assertThat(newMember.getJoinId()).isEqualTo("abcd");
-        Assertions.assertThat(newMember.getPassword()).isEqualTo("abcde");
-        Assertions.assertThat(newMember.getEmail()).isEqualTo("abcde@naver.com");
+        assertThat(newMember.getNickname()).isEqualTo(TestUtilsConstant.MEMBER_NICKNAME);
+        assertThat(newMember.getJoinId()).isEqualTo(TestUtilsConstant.MEMBER_JOINID);
+        assertThat(newMember.getPassword()).isEqualTo(TestUtilsConstant.PASSWORD);
+        assertThat(newMember.getEmail()).isEqualTo(TestUtilsConstant.EMAIL);
     }
-
-
-
-
-
-
-
 }

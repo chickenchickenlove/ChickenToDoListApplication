@@ -1,11 +1,21 @@
 package todo.application;
 
 import todo.application.domain.ArticleStatus;
+import todo.application.domain.Member;
 
 import java.time.LocalDate;
 
 public class TestUtilsConstant {
 
+
+    // MEMBEr
+    public static String MEMBER_NICKNAME = "John";
+    public static String MEMBER_JOINID = "JohnID";
+    public static String PASSWORD = "ABCD";
+    public static String EMAIL = "abcde@naver.com";
+
+
+    // ARTICLE
     public static String ARTICLE_TITLE= "오늘의명언";
     public static String ARTICLE_CONTENT = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
     public static String ARTICLE_WRITER = "dev1";
