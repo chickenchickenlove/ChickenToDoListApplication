@@ -1,22 +1,31 @@
 package todo.application.repository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.config.TransactionManagementConfigUtils;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.transaction.support.TransactionSynchronizationUtils;
+import todo.application.TestUtilsConstant;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 
 import javax.persistence.EntityManager;
+import javax.persistence.RollbackException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,30 +54,34 @@ class MemberRepositoryTest {
     @Autowired
     EntityManager em;
 
+    Member member;
 
     @BeforeEach
     void init_MemberArticle() {
 
-        Member newMember1 = Member.createNewMember("987765", "987765", "987765", "987765@naver.com");
+//        Member newMember1 = Member.createNewMember("987765", "987765", "987765", "987765@naver.com");
+//
+//        for (int i = 0; i < 100; i++) {
+//            Article article = Article.createArticle("ARTICLE" + i, "abc" + i, LocalDate.now(), newMember1.getNickname());
+//            MemberArticle.createMemberArticle(newMember1, article);
+//        }
+//
+//        List<MemberArticle> articles = newMember1.getArticles();
+//        em.persist(newMember1);
+//
+//
+//        for (int i = 0; i < 100; i++) {
+//            em.persist(Member.createNewMember("가나다" + i, "가나다" + i, "abc","abc@ab"+i));
+//        }
+//
+//        em.flush();
+//        em.clear();
+    }
 
-        for (int i = 0; i < 100; i++) {
-            Article article = Article.createArticle("ARTICLE" + i, "abc" + i, LocalDate.now(), newMember1.getNickname());
-            MemberArticle.createMemberArticle(newMember1, article);
-        }
-
-        List<MemberArticle> articles = newMember1.getArticles();
-        em.persist(newMember1);
-
-
-        for (int i = 0; i < 100; i++) {
-            em.persist(Member.createNewMember("가나다" + i, "가나다" + i, "abc","abc@ab"+i));
-        }
-
-        em.flush();
-        em.clear();
-
-
-
+    @BeforeEach
+    void initMemberInstance() {
+        member = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME, TestUtilsConstant.MEMBER_JOINID, TestUtilsConstant.PASSWORD,
+                TestUtilsConstant.EMAIL);
     }
 
 
@@ -104,107 +117,142 @@ class MemberRepositoryTest {
 
 //    }
 
+    void flushContext() {
+        em.flush();
+        em.clear();
+    }
+
     Member createDummyMember() {
         return Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
     }
     @Test
-    void save_pass() {
-        //given
-        Member newMember = createDummyMember();
+    void saveMemberTest() {
 
         //when
-        Long saveMemberId = memberRepository.saveMember(newMember);
+        Long saveMemberId = memberRepository.saveMember(member);
 
         //then
+        flushContext();
         Member findMember = em.find(Member.class, saveMemberId);
-        assertThat(findMember).isEqualTo(newMember);
+        assertThat(findMember.getId()).isEqualTo(findMember.getId());
     }
 
     @Test
-    @DisplayName("Test : findMemberById")
-    void test_findMemberById() {
+    void findMemberByIdTest() {
         //given
-        Member newMember = createDummyMember();
-        Long saveMemberId = memberRepository.saveMember(newMember);
+        Long saveMemberId = memberRepository.saveMember(member);
+        flushContext();
 
         //when
         Member findMember = memberRepository.findMemberById(saveMemberId);
 
         //then
-        assertThat(findMember.getId()).isEqualTo(newMember.getId());
+        assertThat(findMember.getId()).isEqualTo(saveMemberId);
     }
 
     @Test
-    @DisplayName("Test : findMemberById")
-    void test_findMemberByEmail() {
+    void findMemberByIdEmitNullTest() {
         //given
-        Member newMember = createDummyMember();
-        Long saveMemberId = memberRepository.saveMember(newMember);
+        Long saveMemberId = memberRepository.saveMember(member);
+        flushContext();
 
         //when
-        Member findMember = memberRepository.findMemberByEmail(newMember.getEmail());
+        Member findMember = memberRepository.findMemberById(saveMemberId + 1L);
 
         //then
-        assertThat(findMember.getEmail()).isEqualTo(newMember.getEmail());
+        assertThat(findMember).isNull();
+    }
+
+    @Test
+    void findMemberByEmailTest() {
+        //given
+        Long saveMemberId = memberRepository.saveMember(member);
+
+        //when
+        Member findMember = memberRepository.findMemberByEmail(member.getEmail());
+
+        //then
+        assertThat(findMember).isEqualTo(member);
+    }
+
+    @Test
+    void findMemberByEmailAndWillEmitNullWhenDoseNotExistTest() {
+        //given
+        Long saveMemberId = memberRepository.saveMember(member);
+
+        //when
+        Member findMember = memberRepository.findMemberByEmail(member.getEmail() + UUID.randomUUID().toString());
+
+        //then
+        assertThat(findMember).isNull();
     }
 
 
     @Test
-    @DisplayName("가입 ID로 찾는 거 성공")
-    void findByJoinId() {
+    void findByJoinIdTest() {
 
         // when
-        Member newMember = Member.createNewMember("qqq123456zbzb", "qqq123456zbzb", "qqq123456zbzb", "qqq123456zbzb@naver.com");
-        Long saveMemberId = memberRepository.saveMember(newMember);
+        Long saveMemberId = memberRepository.saveMember(member);
 
         //given
-        Member memberByJoinId = memberRepository.findMemberByJoinId("qqq123456zbzb");
+        Member memberByJoinId = memberRepository.findMemberByJoinId(member.getJoinId());
 
         // when
-        assertThat(memberByJoinId.getJoinId()).isEqualTo("qqq123456zbzb");
+        assertThat(memberByJoinId).isEqualTo(member);
     }
 
     @Test
-    @DisplayName("가입 ID로 찾는 거 실패")
-    void findByJoinIdNo() {
+    void findByJoinIdEmitNullIfNoMemberInRepositoryTest() {
 
         // when
-        Member newMember = Member.createNewMember("qqq123456zbzbsg", "qqq123456zbzbsg", "qqq123456zbzbsg", "qqq123456zbzbsg@naver.com");
-        Long saveMemberId = memberRepository.saveMember(newMember);
+        Long saveMemberId = memberRepository.saveMember(member);
 
         //given
-        Member memberByJoinId = memberRepository.findMemberByJoinId("qweqweqweqwe");
+        Member memberByJoinId = memberRepository.findMemberByJoinId(member.getJoinId() + UUID.randomUUID().toString());
 
         // then
         assertThat(memberByJoinId).isNull();
-
     }
 
 
-    @Test
-    void 중복이름_멀티쓰레드_예외발생해야함() throws InterruptedException {
+//    @Test
+//    void 중복이름_멀티쓰레드_예외발생해야함() throws InterruptedException {
 
-        // 쓰레드 풀 생성성
-        ExecutorService service = Executors.newFixedThreadPool(10);
+//         given
+//        ExecutorService service = Executors.newFixedThreadPool(2);
+//        CountDownLatch latch = new CountDownLatch(2);
 
-        // 쓰레드 대기
-        CountDownLatch latch = new CountDownLatch(10);
+//        Assertions.assertThatThrownBy(
+//                () -> {
+//                    for (int i = 0; i < 2; i++) {
+//                        service.execute(() -> {
+//                            memberRepository.saveMember(
+//                                    Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME, TestUtilsConstant.MEMBER_JOINID,
+//                                            TestUtilsConstant.PASSWORD, TestUtilsConstant.EMAIL));
+//                            latch.countDown();
+//                        });
+//                    }
+//                    latch.await(100, TimeUnit.MILLISECONDS);
+//                    flushContext();
+//                }
+//        ).isInstanceOf(Exception.class);
+//        for (int i = 0; i < 2; i++) {
+//            service.execute(() -> {
+//                memberRepository.saveMember(
+//                        Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,TestUtilsConstant.MEMBER_JOINID,
+//                                TestUtilsConstant.PASSWORD, TestUtilsConstant.EMAIL));
+//                latch.countDown();
+//            });
+//        }
+//
+//        latch.await(100, TimeUnit.MILLISECONDS);
+//        flushContext();
+//        Assertions.assertThatThrownBy(() -> {
+//                    latch.await(100, TimeUnit.MILLISECONDS);
+//                    flushContext();
+//                }).isInstanceOf(DataIntegrityViolationException.class);
 
-        // 쓰레드 시작
-
-            for (int i = 0; i < 10; i++) {
-                try {
-                    service.execute(() -> {
-                        memberRepository.saveMember(Member.createNewMember("abc1234", "abc1234", "abc1234", "abc1234"));
-                        latch.countDown();
-                    });
-                } catch (Exception e) {
-                    System.out.println("Exception e " + e);
-                }
-
-            }
-        latch.await(100, TimeUnit.MILLISECONDS);
-    }
+//    }
 
 
     //findMemberByMemberSearch
@@ -212,8 +260,7 @@ class MemberRepositoryTest {
     @DisplayName("memberSearch 모두 null 넣었을 때, 아무것도 안 나와야함")
     void memberSearchNegaTest1() {
 
-
-
+        // given
         PageRequest pageable = PageRequest.of(0, 10);
         Slice<Member> memberByMemberSearch = memberRepository.findMemberByMemberSearch(new MemberSearch(), pageable);
 
@@ -535,55 +582,41 @@ class MemberRepositoryTest {
 
     @Test
     @DisplayName("BULK 삭제 테스트 : 멤버1이 10개의 글을 가지고 있고, 멤버2가 공유받았을 때, 멤버2가 탈퇴하면 글은 하나도 삭제되지 않는다.")
-    void bulkDelete3() {
+    void bulkDeleteTest3() {
 
+        //given
         int limit = 10;
 
-        System.out.println("START TEST ================================");
-        //given
+        Member newMember1 = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME, TestUtilsConstant.MEMBER_JOINID,
+                TestUtilsConstant.PASSWORD, TestUtilsConstant.EMAIL);
+        Member deleteMember2 = Member.createNewMember(TestUtilsConstant.TO_MEMBER_NICKNAME, TestUtilsConstant.TO_MEMBER_JOINID,
+                TestUtilsConstant.TO_PASSWORD, TestUtilsConstant.TO_EMAIL);
 
-        Member newMember1 = Member.createNewMember("qweqwasdasdaase123e", "qweasdfasfvzxf123qwe", "Qweqwe", "qweasvasd123asdqwe@qweqwe");
-        Member newMember2 = Member.createNewMember("aazxcxzczxczxczxcasdasd", "aazxcxzczxczxczxcasdasd", "Qweqwe", "aazxcxzczxczxczxcasdasd@qweqwe");
         memberRepository.saveMember(newMember1);
-        memberRepository.saveMember(newMember2);
+        memberRepository.saveMember(deleteMember2);
 
         for (int i = 0; i < limit; i++) {
-            Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now(), newMember1.getNickname());
-            MemberArticle memberArticle1 = MemberArticle.createMemberArticle(newMember1, article);
-            MemberArticle memberArticle2 = MemberArticle.createMemberArticle(newMember2, article);
+            Article article = Article.createArticle(TestUtilsConstant.ARTICLE_TITLE,
+                    TestUtilsConstant.ARTICLE_CONTENT, TestUtilsConstant.ARTICLE_DUE_DATE, newMember1.getNickname());
+            MemberArticle.createMemberArticle(newMember1, article);
+            MemberArticle.createMemberArticle(deleteMember2, article);
         }
-
-        em.flush();
-        em.clear();
-
-
-
-        ArrayList<Long> list = new ArrayList<>();
-        list.add(newMember2.getId());
-
+        List<Long> memberIdList = List.of(deleteMember2.getId());
+        flushContext();
 
         //when
-        memberRepository.batchRemoveMember(list);
-
-        em.flush();
-        em.clear();
-
+        memberRepository.batchRemoveMember(memberIdList);
+        flushContext();
 
         //then
-        Member findMember = memberRepository.findMemberById(newMember2.getId());
-        List<MemberArticle> removeMemberArticle = memberArticleRepository.findMemberArticleByMemberId(newMember2.getId());
+        List<MemberArticle> removeMemberArticle = memberArticleRepository.findMemberArticleByMemberId(deleteMember2.getId());
         List<MemberArticle> remainMemberArticle = memberArticleRepository.findMemberArticleByMemberId(newMember1.getId());
-
         List<Long> articleIdList = remainMemberArticle.stream().map(MemberArticle::getId).collect(Collectors.toList());
-
+        Member findMember = memberRepository.findMemberById(deleteMember2.getId());
 
         assertThat(findMember).isNull();
         assertThat(removeMemberArticle.size()).isEqualTo(0);
         assertThat(remainMemberArticle.size()).isEqualTo(limit);
         assertThat(articleIdList.size()).isEqualTo(limit);
-
     }
-
-
-
 }

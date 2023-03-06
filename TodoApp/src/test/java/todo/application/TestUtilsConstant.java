@@ -34,4 +34,11 @@ public class TestUtilsConstant {
     public static LocalDate UPDATE_ARTICLE_DUE_DATE = LocalDate.of(2022, 1, 1);
     public static ArticleStatus UPDATE_ARTICLE_STATUS = ArticleStatus.ING;
 
+
+
+    public static Member createMember() {
+        return null;
+    }
+
+
 }

@@ -14,7 +14,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Transactional
 public class TestDataConfig {
