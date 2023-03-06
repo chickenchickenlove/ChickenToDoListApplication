@@ -8,11 +8,18 @@ import java.time.LocalDate;
 public class TestUtilsConstant {
 
 
-    // MEMBEr
+    // Member
     public static String MEMBER_NICKNAME = "John";
     public static String MEMBER_JOINID = "JohnID";
     public static String PASSWORD = "ABCD";
     public static String EMAIL = "abcde@naver.com";
+
+    // TO_MEMBER
+    public static String TO_MEMBER_NICKNAME = "James";
+    public static String TO_MEMBER_JOINID = "JamesID";
+    public static String TO_PASSWORD = "QWER";
+    public static String TO_EMAIL = "james@naver.com";
+
 
 
     // ARTICLE
