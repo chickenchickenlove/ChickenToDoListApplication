@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import todo.application.domain.Member;
+import todo.application.domain.MemberArticle;
 import todo.application.repository.MemberRepository;
 import todo.application.repository.MemberSearch;
 import todo.application.repository.dto.MemberAdminDto;
@@ -27,7 +28,6 @@ public class MemberService {
     private final EntityManager em;
 
     //== 회원 저장==//
-    @Transactional
     public Long saveMember(String nickname, String joinId, String password, String email) {
 
         Member newMember = Member.createNewMember(nickname, joinId, password, email);
@@ -45,7 +45,6 @@ public class MemberService {
     }
 
     //== Batch 연산==//
-    @Transactional
     public void batchRemove(String memberId) {
 
         String[] split = memberId.split("-");
@@ -95,4 +94,7 @@ public class MemberService {
     }
 
 
+    public List<MemberArticle> findArticleListByMemberId(Long id) {
+        return null;
+    }
 }

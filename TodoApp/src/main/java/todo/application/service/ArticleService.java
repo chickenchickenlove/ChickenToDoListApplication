@@ -1,5 +1,6 @@
 package todo.application.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+// TODO : 로그를 남기는 것보다 Exception을 만들어서 던지는 것이 좋을 듯. (뭔가 처리하지 않을 것이기 때문?)
+// 넘어오는 것을 받아서 응답 코드를 만들어주는 형태가 더 좋을 듯 하다.
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,43 +31,38 @@ public class ArticleService {
     private final MemberArticleRepository memberArticleRepository;
 
     // 새로운 글 저장
-    @Transactional(readOnly = false)
     public Long saveNewArticle(String writeContents, String writeTitle, LocalDate dueDate, Long memberId) {
 
         Member findMember = memberRepository.findMemberById(memberId);
-        Article article = Article.createArticle(writeTitle, writeContents, dueDate);
 
-        MemberArticle memberArticle = new MemberArticle();
-        memberArticle.addMemberArticle(findMember, article);
+        Article newArticle = Article.createArticle(writeTitle, writeContents, dueDate, findMember.getNickname());
+        MemberArticle memberArticle = MemberArticle.createMemberArticle(findMember, newArticle);
 
-        article.setWriter(findMember.getNickname());
-        articleRepository.saveArticle(article);
+        articleRepository.saveArticle(newArticle);
 
-        return article.getId();
+        return newArticle.getId();
     }
 
     // Article 공유
-    @Transactional(readOnly = false)
-    public void shareArticleWithOthers(Long memberId, Long articleId, Long originalMemberId) {
+    public void shareArticleWithOthers(Long toMemberId, Long articleId, Long fromMemberId) {
 
         // Validation : 공유할 사람이 권한이 있는지 확인함.
-        if (!wasWrittenByThisMember(originalMemberId, articleId)) {
+        if (!wasWrittenByThisMember(fromMemberId, articleId)) {
             return;
         }
 
         // validation : 공유할 대상에게 동일한 글이 있는지 확인한다.
-        MemberArticle validation = articleRepository.findMemberArticleByMemberIdAndArticleId(memberId, articleId);
+        MemberArticle validation = articleRepository.findMemberArticleByMemberIdAndArticleId(toMemberId, articleId);
 
         if (validation != null) {
             log.info("동일한 글이 이미 해당 대상에게 있습니다. 따라서 공유가 안됩니다.");
             return;
         }
 
-        // 성공로직
-        Member findMember = memberRepository.findMemberById(memberId);
+        // 성공 로직
+        Member findMember = memberRepository.findMemberById(toMemberId);
         Article findArticle = articleRepository.findArticleById(articleId);
-        MemberArticle memberArticle = new MemberArticle();
-        memberArticle.addMemberArticle(findMember, findArticle);
+        MemberArticle memberArticle = MemberArticle.createMemberArticle(findMember, findArticle);
     }
 
     /**
@@ -72,9 +70,9 @@ public class ArticleService {
      */
 
     public List<MemberArticle> findArticleByMemberId(Long memberId){
-        List<MemberArticle> articleByMemberId = articleRepository.findArticleByMemberId(memberId);
-        Collections.sort(articleByMemberId);
-        return articleByMemberId;
+        List<MemberArticle> memberArticleList = articleRepository.findArticleByMemberId(memberId);
+        Collections.sort(memberArticleList);
+        return memberArticleList;
     }
 
     public Article findArticleByArticleId(Long articleId){
@@ -86,7 +84,6 @@ public class ArticleService {
      */
 
     // 글 수정
-    @Transactional(readOnly = false)
     public void editNewArticle(Long articleId, EditArticleForm editArticle, Long memberId) {
 
         if (!wasWrittenByThisMember(memberId,articleId)) {
@@ -94,16 +91,11 @@ public class ArticleService {
             return;
         }
 
-        Article articleById = articleRepository.findArticleById(articleId);
-
-        articleById.setDueDate(editArticle.getDueDate());
-        articleById.setStatus(editArticle.getStatus());
-        articleById.setWriteTitle(editArticle.getWriteTitle());
-        articleById.setWriteContents(editArticle.getWriteContents());
+        Article findArticle = articleRepository.findArticleById(articleId);
+        findArticle.update(editArticle.getDueDate(), editArticle.getStatus(), editArticle.getWriteTitle(), editArticle.getWriteContents());
     }
 
     // READY → COMPLETE로 상태 변환
-    @Transactional(readOnly = false)
     public void completeArticle(Long articleId, Long memberId) {
         if (!wasWrittenByThisMember(memberId, articleId)) {
             return;
@@ -114,7 +106,6 @@ public class ArticleService {
     }
 
     // 삭제 로직
-    @Transactional(readOnly = false)
     public void deleteArticle(Long articleId, Long memberId) {
         if (!wasWrittenByThisMember(memberId,articleId)) {
             log.info("적은 사람과 소유자가 달라 글을 수정할 수 없습니다. ");
@@ -129,7 +120,7 @@ public class ArticleService {
 
     public boolean wasWrittenByThisMember(Long memberId, Long articleId) {
         MemberArticle findMemberArticle = memberArticleRepository.findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(memberId, articleId);
-        return findMemberArticle != null ? true : false;
+        return findMemberArticle != null;
     }
 
 }

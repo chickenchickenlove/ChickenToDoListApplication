@@ -45,8 +45,7 @@ class RequestShareArticleRepositoryTest {
         memberRepository.saveMember(toMember);
 
         for (int i = 0; i < 100; i++) {
-            Article article = Article.createArticle("share", "shareshare", LocalDate.now());
-            article.setWriter(fromMember.getNickname());
+            Article article = Article.createArticle("share", "shareshare", LocalDate.now(), fromMember.getNickname());
             articleRepository.saveArticle(article);
 
             RequestShareArticle requestShareArticle = RequestShareArticle.createRequestShareArticle(toMember, fromMember, article);
@@ -69,8 +68,7 @@ class RequestShareArticleRepositoryTest {
         //given
         Member fromMember = Member.createNewMember("fromMember", "fromMember", "abc", "abc@abc.com");
         Member toMember = Member.createNewMember("toMember", "toMember", "abc", "abdfdfc@abc.com");
-        Article article = Article.createArticle("share", "shareshare", LocalDate.now());
-        article.setWriter(fromMember.getNickname());
+        Article article = Article.createArticle("share", "shareshare", LocalDate.now(), fromMember.getNickname());
 
         memberRepository.saveMember(fromMember);
         memberRepository.saveMember(toMember);
@@ -96,8 +94,7 @@ class RequestShareArticleRepositoryTest {
         //given
         Member fromMember = Member.createNewMember("fromMember", "fromMember", "abc", "abc@abc.com");
         Member toMember = Member.createNewMember("toMember", "toMember", "abc", "abdfdfc@abc.com");
-        Article article = Article.createArticle("share", "shareshare", LocalDate.now());
-        article.setWriter(fromMember.getNickname());
+        Article article = Article.createArticle("share", "shareshare", LocalDate.now(),fromMember.getNickname());
 
         memberRepository.saveMember(fromMember);
         memberRepository.saveMember(toMember);
@@ -122,8 +119,7 @@ class RequestShareArticleRepositoryTest {
         //given
         Member fromMember = Member.createNewMember("fromMember", "fromMember", "abc", "abc@abc.com");
         Member toMember = Member.createNewMember("toMember", "toMember", "abc", "abdfdfc@abc.com");
-        Article article = Article.createArticle("share", "shareshare", LocalDate.now());
-        article.setWriter(fromMember.getNickname());
+        Article article = Article.createArticle("share", "shareshare", LocalDate.now(), fromMember.getNickname());
 
         memberRepository.saveMember(fromMember);
         memberRepository.saveMember(toMember);

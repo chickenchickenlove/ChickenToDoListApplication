@@ -52,10 +52,8 @@ class MemberRepositoryTest {
         Member newMember1 = Member.createNewMember("987765", "987765", "987765", "987765@naver.com");
 
         for (int i = 0; i < 100; i++) {
-            Article article = Article.createArticle("ARTICLE" + i, "abc" + i, LocalDate.now());
-            article.setWriter("987765");
-            MemberArticle memberArticle1 = new MemberArticle();
-            memberArticle1.addMemberArticle(newMember1, article);
+            Article article = Article.createArticle("ARTICLE" + i, "abc" + i, LocalDate.now(), newMember1.getNickname());
+            MemberArticle.createMemberArticle(newMember1, article);
         }
 
         List<MemberArticle> articles = newMember1.getArticles();
@@ -462,10 +460,8 @@ class MemberRepositoryTest {
 
 
 
-        Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
-        article.setWriter("qweqwasdasdaase123e");
-        MemberArticle memberArticle1 = new MemberArticle();
-        memberArticle1.addMemberArticle(newMember, article);
+        Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now(), newMember.getNickname());
+        MemberArticle.createMemberArticle(newMember, article);
 
         em.flush();
         em.clear();
@@ -508,10 +504,8 @@ class MemberRepositoryTest {
         memberRepository.saveMember(newMember);
 
         for (int i = 0; i < limit; i++) {
-            Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
-            article.setWriter("qweqwasdasdaase123e");
-            MemberArticle memberArticle1 = new MemberArticle();
-            memberArticle1.addMemberArticle(newMember, article);
+            Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now(), newMember.getNickname());
+            MemberArticle memberArticle = MemberArticle.createMemberArticle(newMember, article);
         }
 
 
@@ -554,13 +548,9 @@ class MemberRepositoryTest {
         memberRepository.saveMember(newMember2);
 
         for (int i = 0; i < limit; i++) {
-            Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
-            article.setWriter("qweqwasdasdaase123e");
-            MemberArticle memberArticle1 = new MemberArticle();
-            MemberArticle memberArticle2 = new MemberArticle();
-            memberArticle1.addMemberArticle(newMember1, article);
-            memberArticle2.addMemberArticle(newMember2, article);
-
+            Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now(), newMember1.getNickname());
+            MemberArticle memberArticle1 = MemberArticle.createMemberArticle(newMember1, article);
+            MemberArticle memberArticle2 = MemberArticle.createMemberArticle(newMember2, article);
         }
 
         em.flush();

@@ -1,9 +1,6 @@
 package todo.application.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -14,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberArticle implements Comparable<MemberArticle>{
 
     //== 테이블 매칭용 ==//
@@ -30,6 +27,17 @@ public class MemberArticle implements Comparable<MemberArticle>{
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "article_id")
     private Article article;
+
+    public static MemberArticle createMemberArticle(Member member, Article article) {
+        return new MemberArticle(member, article);
+    }
+    private MemberArticle(Member member, Article article) {
+        this.member = member;
+        this.article = article;
+
+        member.getArticles().add(this);
+        article.getMemberArticles().add(this);
+    }
 
     //== 연관관계 편의 메서드==//
     public void addMemberArticle(Member member, Article article) {

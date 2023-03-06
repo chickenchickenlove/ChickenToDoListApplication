@@ -1,8 +1,6 @@
 package todo.application.domain;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -16,6 +14,7 @@ import static javax.persistence.FetchType.*;
 @ToString
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article extends BaseEntity {
 
     //== 테이블 매칭용 ==//
@@ -40,7 +39,7 @@ public class Article extends BaseEntity {
     private Long version;
 
     //== 생성 메서드==//
-    public static Article createArticle(String writeTitle, String writeContents, LocalDate dueDate) {
+    public static Article createArticle(String writeTitle, String writeContents, LocalDate dueDate, String writer) {
 
         Article article = new Article();
 
@@ -48,8 +47,17 @@ public class Article extends BaseEntity {
         article.writeContents = writeContents;
         article.dueDate = dueDate;
         article.status = ArticleStatus.ING;
+        article.writer = writer;
 
         return article;
     }
+
+    public void update(LocalDate dueDate, ArticleStatus status, String title, String writeContents) {
+        this.dueDate = dueDate;
+        this.status = status;
+        this.writeTitle = title;
+        this.writeContents = writeContents;
+    }
+
 
 }

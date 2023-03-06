@@ -1,6 +1,7 @@
 package todo.application.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,9 +9,14 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
+import todo.application.domain.MemberArticle;
+import todo.application.repository.ArticleRepositoryImpl;
+import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.*;
 
 @Slf4j
 @Transactional
@@ -21,37 +27,41 @@ class ArticleServiceTest {
     @Autowired
     ArticleService articleService;
 
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    ArticleRepositoryImpl articleRepository;
 
     @Autowired
     EntityManager em;
 
     @Test
-    @Rollback(value = false)
-    void saveArticle() throws Exception{
+    void saveArticle() {
 
+        // given
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Article article = Article.createArticle(myTitle, myContents, LocalDate.now());
         Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+        memberRepository.saveMember(newMember);
 
-        em.persist(newMember);
+        // when
+        Long articleId = articleService.saveNewArticle(myTitle, myContents, LocalDate.now(), newMember.getId());
 
-        em.flush();
-        em.clear();
-
-
-        articleService.saveNewArticle(myTitle, myContents, LocalDate.now(),newMember.getId());
+        // then
+        Article findArticle = articleRepository.findArticleById(articleId);
+        assertThat(findArticle.getId()).isEqualTo(articleId);
     }
 
 
     @Test
-    @Rollback(value = false)
     void editArticle() throws Exception{
 
+
+        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
         String myTitle = "오늘의명언";
         String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Article article = Article.createArticle(myTitle, myContents, LocalDate.now());
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+        Article article = Article.createArticle(myTitle, myContents, LocalDate.now(), newMember.getNickname());
 
 
         em.persist(newMember);
@@ -62,18 +72,12 @@ class ArticleServiceTest {
         Long articleNumber = articleService.saveNewArticle(myTitle, myContents, LocalDate.now(),newMember.getId());
 
 
-        log.info("here??????????");
-
-
         String editTitle = "수정용";
         String editContents = "수정을 해볼까요?";
 
 //        articleService.editNewArticle(articleNumber, editTitle, editContents, );
-        log.info("here???????????????????");
 
     }
-
-
 
 
 }

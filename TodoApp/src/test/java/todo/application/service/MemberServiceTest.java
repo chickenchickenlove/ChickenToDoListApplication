@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
+import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;

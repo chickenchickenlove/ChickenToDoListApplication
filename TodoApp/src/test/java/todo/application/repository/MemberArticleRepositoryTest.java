@@ -46,28 +46,21 @@ class MemberArticleRepositoryTest {
         em.persist(newMember1);
         Article article = null;
         for (int i = 0; i < 100; i++) {
-            article = Article.createArticle("ARTICLE" + i, "abc" + i, LocalDate.now());
-            article.setWriter("987765");
-
             if (i % 2 == 0) {
-                article.setDueDate(LocalDate.of(2002, 12, 30));
+                article = Article.createArticle(
+                        "ARTICLE" + i, "abc" + i, LocalDate.of(2002, 12, 30), newMember1.getNickname());
             } else {
-                article.setDueDate(LocalDate.of(2002, 12, 1));
+                article = Article.createArticle(
+                        "ARTICLE" + i, "abc" + i, LocalDate.of(2002, 12, 1), newMember1.getNickname());
             }
-
-
-            MemberArticle memberArticle1 = new MemberArticle();
-            memberArticle1.addMemberArticle(newMember1, article);
+            MemberArticle.createMemberArticle(newMember1, article);
         }
-
 
         Member newMember2 = Member.createNewMember("qwerq5", "987234234765", "987723423465", "982342347765@naver.com");
         em.persist(newMember2);
         List<Article> allArticles = articleRepository.findAllArticles();
         for (Article article3 : allArticles) {
-            MemberArticle memberArticle = new MemberArticle();
-            memberArticle.addMemberArticle(newMember2, article3);
-
+            MemberArticle.createMemberArticle(newMember2, article3);
         }
     }
 
@@ -203,15 +196,11 @@ class MemberArticleRepositoryTest {
     void findMemberArticleByMemberIdArticleId2test1() {
 
         //given
-
         Member newMember1 = Member.createNewMember("111555", "111555", "111555", "987123123765@naver.com");
         em.persist(newMember1);
 
-
-        Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
-        article.setWriter(newMember1.getNickname());
-        MemberArticle memberArticle1 = new MemberArticle();
-        memberArticle1.addMemberArticle(newMember1, article);
+        Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now(), newMember1.getNickname());
+        MemberArticle.createMemberArticle(newMember1, article);
 
         em.flush();
         em.clear();
@@ -236,17 +225,14 @@ class MemberArticleRepositoryTest {
         em.persist(newMember1);
 
 
-        Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now());
+        Article article = Article.createArticle("ARTICLE", "abc", LocalDate.now(), newMember1.getNickname());
         article.setWriter(newMember1.getNickname());
-        MemberArticle memberArticle1 = new MemberArticle();
-        memberArticle1.addMemberArticle(newMember1, article);
+        MemberArticle memberArticle1 = MemberArticle.createMemberArticle(newMember1, article);
 
         Member newMember2 = Member.createNewMember("11155555", "11155555", "11155555", "987125353123765@naver.com");
         em.persist(newMember2);
 
-
-        MemberArticle memberArticle2 = new MemberArticle();
-        memberArticle2.addMemberArticle(newMember2, article);
+        MemberArticle memberArticle2 = MemberArticle.createMemberArticle(newMember2, article);
 
 
         log.info("memberArticle2 = {}", memberArticle2);

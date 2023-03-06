@@ -50,10 +50,9 @@ public class ArticleRepositoryTest {
         Member findMember = memberService.findMemberById(memberId);
 
         for (int i = 0; i < 25; i++) {
-            Article saveArticle = Article.createArticle("ARTICLE" +i , "article" + i, LocalDate.now());
+            Article saveArticle = Article.createArticle("ARTICLE" +i , "article" + i, LocalDate.now(), findMember.getNickname());
             saveArticle.setWriter(findMember.getNickname());
-            MemberArticle saveMemberArticle = new MemberArticle();
-            saveMemberArticle.addMemberArticle(findMember, saveArticle);
+            MemberArticle.createMemberArticle(findMember, saveArticle);
         }
 
         for (int i = 0; i < 25; i++) {

@@ -31,7 +31,7 @@ class RequestShareArticleTest {
         Member fromMember = Member.createNewMember("fromMember", "fromMember", "abc", "abc@abc.com");
         Member toMember = Member.createNewMember("toMember", "toMember", "abc", "abdfdfc@abc.com");
 
-        Article article = Article.createArticle("share", "shareshare", LocalDate.now());
+        Article article = Article.createArticle("share", "shareshare", LocalDate.now(), fromMember.getNickname());
         article.setWriter(fromMember.getNickname());
 
         em.persist(fromMember);
