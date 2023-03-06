@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class VisitorViewTest {
 
     @Test
-    void createMethodTest() throws Exception{
+    void createMethodTest() {
         //given + when
         VisitorView visitorView = VisitorView.createVisitorView();
 
@@ -26,7 +26,7 @@ class VisitorViewTest {
     }
 
     @Test
-    void unitTest1() throws Exception{
+    void unitTest1(){
         //given
         VisitorView visitorView = VisitorView.createVisitorView();
 
@@ -39,7 +39,7 @@ class VisitorViewTest {
 
 
     @Test
-    void unitTest2() throws Exception{
+    void unitTest2(){
         //given
         VisitorView visitorView = VisitorView.createVisitorView();
 
@@ -52,7 +52,7 @@ class VisitorViewTest {
 
 
     @Test
-    void unitTest3() throws Exception{
+    void unitTest3(){
         //given
         VisitorView visitorView = VisitorView.createVisitorView();
 
@@ -65,7 +65,7 @@ class VisitorViewTest {
 
 
     @Test
-    void unitTest4() throws Exception{
+    void unitTest4(){
         //given
         VisitorView visitorView = VisitorView.createVisitorView();
 
