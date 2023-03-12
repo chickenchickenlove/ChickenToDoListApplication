@@ -12,6 +12,10 @@ import todo.application.domain.MemberArticle;
 import todo.application.repository.MemberRepository;
 import todo.application.repository.MemberSearch;
 import todo.application.repository.dto.MemberAdminDto;
+import todo.application.service.core.MemberServiceCore;
+import todo.application.service.input.MemberServiceInput;
+import todo.application.service.output.MemberServiceOutput;
+import todo.application.service.shell.MemberServiceShell;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -26,22 +30,14 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EntityManager em;
+    private final MemberServiceShell memberServiceShell;
+    private final MemberServiceCore memberServiceCore;
 
     //== 회원 저장==//
     public Long saveMember(String nickname, String joinId, String password, String email) {
-
-        Member newMember = Member.createNewMember(nickname, joinId, password, email);
-        Long memberId;
-
-        try {
-            memberId = memberRepository.saveMember(newMember);
-            em.flush();
-        } catch (PersistenceException e) {
-            log.info("유니크 제약 조건으로 인해 문제가 발생했습니다.");
-            return null;
-        }
-
-        return memberId;
+        MemberServiceInput memberServiceInput = memberServiceShell.readyForSaveMember(nickname, joinId, password, email);
+        MemberServiceOutput memberServiceOutput = memberServiceCore.doCreateMember(memberServiceInput);
+        return memberServiceShell.wrapUpAfterSaveMember(memberServiceOutput);
     }
 
     //== Batch 연산==//

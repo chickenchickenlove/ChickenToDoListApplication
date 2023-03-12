@@ -1,6 +1,8 @@
 package todo.application.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity{
 
     //== 테이블 매치용 ==//
