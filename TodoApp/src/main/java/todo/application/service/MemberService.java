@@ -1,6 +1,5 @@
 package todo.application.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,7 +17,6 @@ import todo.application.service.output.MemberServiceOutput;
 import todo.application.service.shell.MemberServiceShell;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -80,19 +78,20 @@ public class MemberService {
 
 
     //== 비즈니스 로직==//
-    public Member findJoinIdByEmail(String email) {
-        if (StringUtils.hasText(email)) {
-            return memberRepository.findMemberByEmail(email);
+    public Member findMemberByEmail(String email) {
+        if (!StringUtils.hasText(email)) {
+            throw new IllegalArgumentException();
         }
-        return null;
+
+        return memberRepository.findMemberByEmail(email);
     }
 
-    public Member findPassword(String email, String joinID) {
-
-        if (StringUtils.hasText(email) && StringUtils.hasText(joinID)) {
-            return memberRepository.findMemberByEmail(email);
+    public String findPassword(String email, String joinID) {
+        if (!StringUtils.hasText(email) || !StringUtils.hasText(joinID)) {
+            return null;
         }
-        return null;
+
+        return memberRepository.findMemberByEmail(email).getPassword();
     }
 
 

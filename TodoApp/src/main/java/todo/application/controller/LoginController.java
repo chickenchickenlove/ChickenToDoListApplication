@@ -19,6 +19,7 @@ import todo.application.service.VisitorViewService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Objects;
 
 @Controller
 @Slf4j
@@ -88,7 +89,7 @@ public class LoginController {
             return "login/loginForgetId";
         }
         // DB Validation
-        Member findMember = memberService.findJoinIdByEmail(form.getEmail());
+        Member findMember = memberService.findMemberByEmail(form.getEmail());
 
         // null Check
         if (findMember == null) {
@@ -113,8 +114,9 @@ public class LoginController {
     }
 
     @PostMapping("/forgetpassword")
-    public String forgetPasswordView(@Valid @ModelAttribute(name = "loginForgetPasswordForm") LoginForgetPasswordForm form,
-                               BindingResult bindingResult) {
+    public String forgetPasswordView(
+            @Valid @ModelAttribute(name = "loginForgetPasswordForm") LoginForgetPasswordForm form,
+            BindingResult bindingResult) {
 
         // input Validation
         if (bindingResult.hasErrors()) {
@@ -122,19 +124,15 @@ public class LoginController {
             return "login/loginForgetPassword";
         }
 
+        String password = memberService.findPassword(form.getEmail(), form.getJoinId());
 
-        // DB Validation
-        Member findMember = memberService.findPassword(form.getEmail(), form.getJoinId());
-        if (findMember == null) {
+        if (Objects.isNull(password)) {
             bindingResult.reject("NoSuchEmailId", "Email과 일치하는 ID가 없습니다.");
-        }
-
-        if (bindingResult.hasErrors()) {
             log.info("Binding Result = {}", bindingResult);
             return "login/loginForgetPassword";
         }
 
-        form.setPassword(findMember.getPassword());
+        form.setPassword(password);
         return "login/loginForgetPasswordOk";
     }
 
