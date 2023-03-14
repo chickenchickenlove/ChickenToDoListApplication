@@ -71,9 +71,15 @@ class MemberServiceTest {
                 newMemberJoinForm.getEmail());
 
         // then
-        Assertions.assertThat(memberId).isNotNull();
+        Member findMember = memberRepository.findMemberById(memberId);
+        assertThat(findMember.getId()).isEqualTo(memberId);
+        assertThat(findMember.getPassword()).isEqualTo(findMember.getPassword());
+        assertThat(findMember.getEmail()).isEqualTo(findMember.getEmail());
+        assertThat(findMember.getJoinId()).isEqualTo(findMember.getJoinId());
+        assertThat(findMember.getNickname()).isEqualTo(findMember.getNickname());
     }
 
+    // Duplicated Entity
     @Test
     void saveMemberFailTest() {
         // given

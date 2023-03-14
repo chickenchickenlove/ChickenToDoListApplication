@@ -75,4 +75,35 @@ class MemberServiceUnitTest {
                 .isInstanceOf(memberServiceInput.getException().getClass());
     }
 
+    @Test
+    void createNewMemberFail2Test() {
+
+        // given
+        MemberJoinForm memberJoinForm = TestUtils.createNewMemberJoinForm();
+
+        String email = memberJoinForm.getEmail();
+        String password = memberJoinForm.getPassword();
+        String nickname = memberJoinForm.getNickname();
+        String joinId = memberJoinForm.getJoinId();
+
+        MemberServiceInput input1 = MemberServiceInput.builder().build();
+        MemberServiceInput input2 = MemberServiceInput.builder().newEmail(email).newPassword(password).newNickName(nickname).build();
+        MemberServiceInput input3 = MemberServiceInput.builder().newPassword(password).newNickName(nickname).newJoinId(joinId).build();
+        MemberServiceInput input4 = MemberServiceInput.builder().newEmail(email).newNickName(nickname).newJoinId(joinId).build();
+        MemberServiceInput input5 = MemberServiceInput.builder().newEmail(email).newPassword(password).newNickName(nickname).build();
+
+        // when + then
+        assertThatThrownBy(() -> memberServiceCore.doCreateMember(input1))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> memberServiceCore.doCreateMember(input2))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> memberServiceCore.doCreateMember(input3))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> memberServiceCore.doCreateMember(input4))
+                .isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> memberServiceCore.doCreateMember(input5))
+                .isInstanceOf(IllegalStateException.class);
+    }
+
+
 }

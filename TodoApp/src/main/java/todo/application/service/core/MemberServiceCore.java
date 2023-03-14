@@ -31,8 +31,4 @@ public class MemberServiceCore {
         return MemberServiceOutput.builder()
                 .createdMember(newMember).build();
     }
-
-
-
-
 }

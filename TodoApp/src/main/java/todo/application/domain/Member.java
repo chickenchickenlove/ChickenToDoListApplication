@@ -4,11 +4,13 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -46,6 +48,10 @@ public class Member extends BaseEntity{
     //== 생성 메서드==//
     public static Member createNewMember(String nickname, String joinId, String password, String email) {
 
+        if (canCreate(nickname, joinId, password, email)) {
+            throw new IllegalStateException();
+        }
+
         Member member = new Member();
         member.nickname = nickname;
         member.joinId = joinId;
@@ -66,4 +72,10 @@ public class Member extends BaseEntity{
         return member;
     }
 
+    public static boolean canCreate(String nickname, String joinId, String password, String email) {
+        return !StringUtils.hasText(nickname) ||
+                !StringUtils.hasText(joinId) ||
+                !StringUtils.hasText(password) ||
+                !StringUtils.hasText(email);
+    }
 }
