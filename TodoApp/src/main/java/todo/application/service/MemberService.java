@@ -25,13 +25,19 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @Transactional
-@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final EntityManager em;
     private final MemberServiceShell memberServiceShell;
     private final MemberServiceCore memberServiceCore;
+
+    public MemberService(MemberRepository memberRepository, EntityManager em, MemberServiceShell memberServiceShell, MemberServiceCore memberServiceCore) {
+        this.memberRepository = memberRepository;
+        this.em = em;
+        this.memberServiceShell = memberServiceShell;
+        this.memberServiceCore = memberServiceCore;
+    }
 
     //== 회원 저장==//
     public Long saveMember(String nickname, String joinId, String password, String email) {
