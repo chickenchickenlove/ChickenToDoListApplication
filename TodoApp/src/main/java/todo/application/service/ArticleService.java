@@ -34,10 +34,7 @@ public class ArticleService {
     public Long saveNewArticle(String writeContents, String writeTitle, LocalDate dueDate, Long memberId) {
 
         Member findMember = memberRepository.findMemberById(memberId);
-
-        Article newArticle = Article.createArticle(writeTitle, writeContents, dueDate, findMember.getNickname());
-        MemberArticle memberArticle = MemberArticle.createMemberArticle(findMember, newArticle);
-
+        Article newArticle = Article.createArticle(writeTitle, writeContents, dueDate, findMember);
         articleRepository.saveArticle(newArticle);
 
         return newArticle.getId();
@@ -86,13 +83,18 @@ public class ArticleService {
     // 글 수정
     public void editNewArticle(Long articleId, EditArticleForm editArticle, Long memberId) {
 
-        if (!wasWrittenByThisMember(memberId,articleId)) {
+        Member findMember = memberRepository.findMemberById(memberId);
+        Article findArticle = articleRepository.findArticleById(articleId);
+
+        if (!findArticle.canEditByThisMember(findMember)) {
+            // TODO : 추후 에러로 변경필요. 잘못된 동작이기 때문임.
             log.info("적은 사람과 소유자가 달라 글을 수정할 수 없습니다. ");
-            return;
         }
 
-        Article findArticle = articleRepository.findArticleById(articleId);
-        findArticle.update(editArticle.getDueDate(), editArticle.getStatus(), editArticle.getWriteTitle(), editArticle.getWriteContents());
+        findArticle.update(editArticle.getDueDate(),
+                editArticle.getStatus(),
+                editArticle.getWriteTitle(),
+                editArticle.getWriteContents());
     }
 
     // READY → COMPLETE로 상태 변환

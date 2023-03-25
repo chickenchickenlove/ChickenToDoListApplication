@@ -18,6 +18,15 @@ public class EditArticleForm {
     @Enumerated(EnumType.STRING)
     private ArticleStatus status;
 
+    public EditArticleForm() {
+    }
+
+    public EditArticleForm(LocalDate dueDate, String writeTitle, String writeContents, ArticleStatus status) {
+        this.dueDate = dueDate;
+        this.writeTitle = writeTitle;
+        this.writeContents = writeContents;
+        this.status = status;
+    }
 
     public void setArticleForm(Article article){
         writeTitle = article.getWriteTitle();

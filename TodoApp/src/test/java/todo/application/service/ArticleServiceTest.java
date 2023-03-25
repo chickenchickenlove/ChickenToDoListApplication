@@ -8,7 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.SpringBootBaseTest;
+import todo.application.TestUtilsConstant;
+import todo.application.controller.form.EditArticleForm;
 import todo.application.domain.Article;
+import todo.application.domain.ArticleStatus;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 import todo.application.repository.ArticleRepositoryImpl;
@@ -38,46 +41,72 @@ class ArticleServiceTest extends SpringBootBaseTest {
     EntityManager em;
 
     @Test
-    void saveArticle() {
+    void saveNewArticleSuccessTest() {
 
         // given
-        String myTitle = "오늘의명언";
-        String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
+        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
+        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
+        Member newMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
+                TestUtilsConstant.MEMBER_JOINID
+                ,TestUtilsConstant.PASSWORD,
+                TestUtilsConstant.EMAIL);
         memberRepository.saveMember(newMember);
 
+        flushAndClear();
+
         // when
-        Long articleId = articleService.saveNewArticle(myTitle, myContents, LocalDate.now(), newMember.getId());
+        Long articleId = articleService.saveNewArticle(myContents, myTitle, LocalDate.now(), newMember.getId());
 
         // then
+        flushAndClear();
+
         Article findArticle = articleRepository.findArticleById(articleId);
         assertThat(findArticle.getId()).isEqualTo(articleId);
+        assertThat(findArticle.getWriteTitle()).isEqualTo(TestUtilsConstant.ARTICLE_TITLE);
+        assertThat(findArticle.getWriter()).isEqualTo(TestUtilsConstant.MEMBER_NICKNAME);
     }
 
 
     @Test
-    void editArticle() throws Exception{
+    void editArticleSuccessTest(){
+
+        // given
+        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
+        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
+        Member newMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
+                TestUtilsConstant.MEMBER_JOINID
+                ,TestUtilsConstant.PASSWORD,
+                TestUtilsConstant.EMAIL);
+        memberRepository.saveMember(newMember);
+        Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), newMember.getId());
+
+        flushAndClear();
+
+        EditArticleForm editArticleForm = new EditArticleForm(
+                TestUtilsConstant.UPDATE_ARTICLE_DUE_DATE,
+                TestUtilsConstant.UPDATE_ARTICLE_TITLE,
+                TestUtilsConstant.UPDATE_ARTICLE_CONTENT,
+                TestUtilsConstant.UPDATE_ARTICLE_STATUS);
 
 
-        Member newMember = Member.createNewMember("abc", "abcd", "abcde", "abcde@naver.com");
-        String myTitle = "오늘의명언";
-        String myContents = "안녕하세요 \n" + "안녕할까요? \n" + "안녕합니다.";
-        Article article = Article.createArticle(myTitle, myContents, LocalDate.now(), newMember.getNickname());
+        // when
+        articleService.editNewArticle(articleId, editArticleForm, newMember.getId());
 
+        // then
+        flushAndClear();
 
-        em.persist(newMember);
+        Article findArticle = articleRepository.findArticleById(articleId);
 
+        assertThat(findArticle.getWriteContents()).isEqualTo(TestUtilsConstant.UPDATE_ARTICLE_CONTENT);
+        assertThat(findArticle.getWriteTitle()).isEqualTo(TestUtilsConstant.UPDATE_ARTICLE_TITLE);
+        assertThat(findArticle.getDueDate()).isEqualTo(TestUtilsConstant.UPDATE_ARTICLE_DUE_DATE);
+        assertThat(findArticle.getStatus()).isEqualTo(TestUtilsConstant.UPDATE_ARTICLE_STATUS);
+
+    }
+
+    void flushAndClear() {
         em.flush();
         em.clear();
-
-        Long articleNumber = articleService.saveNewArticle(myTitle, myContents, LocalDate.now(),newMember.getId());
-
-
-        String editTitle = "수정용";
-        String editContents = "수정을 해볼까요?";
-
-//        articleService.editNewArticle(articleNumber, editTitle, editContents, );
-
     }
 
 

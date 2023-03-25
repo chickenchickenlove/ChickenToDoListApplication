@@ -59,5 +59,23 @@ public class Article extends BaseEntity {
         this.writeContents = writeContents;
     }
 
+    public static Article createArticle(String writeTitle, String writeContents, LocalDate dueDate, Member member) {
 
+        Article article = new Article();
+
+        article.writeTitle = writeTitle;
+        article.writeContents = writeContents;
+        article.dueDate = dueDate;
+        article.status = ArticleStatus.ING;
+        article.writer = member.getNickname();
+
+        MemberArticle memberArticle = MemberArticle.createMemberArticle(member, article);
+
+        return article;
+    }
+
+
+    public boolean canEditByThisMember(Member findMember) {
+        return findMember.getNickname().equals(this.writer);
+    }
 }
