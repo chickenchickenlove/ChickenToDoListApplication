@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static todo.application.TestUtilsConstant.*;
 
 
-@SpringBootTest
 @Slf4j
 class ArticleTest {
 

@@ -50,7 +50,7 @@ dependencies {
 	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
 	// p6spy 추가
-//	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
+    // implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
 
 	// AOP 추가
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
@@ -61,7 +61,11 @@ dependencies {
 
 
 	// 서버 재시작 없이 반영
-//	implementation group: 'org.springframwork.boot', name: 'spring-boot-devtools', version: '2.3.4.RELEASE'
+	// implementation group: 'org.springframwork.boot', name: 'spring-boot-devtools', version: '2.3.4.RELEASE'
+
+	// TestContainers
+	testImplementation 'org.testcontainers:junit-jupiter:1.17.6'
+	testImplementation 'org.testcontainers:mysql:1.17.6'
 
 }
 

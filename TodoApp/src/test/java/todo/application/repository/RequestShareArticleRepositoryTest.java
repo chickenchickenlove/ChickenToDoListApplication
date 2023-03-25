@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
+import todo.application.SpringBootBaseTest;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
 import todo.application.domain.RequestShareArticle;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class RequestShareArticleRepositoryTest {
+class RequestShareArticleRepositoryTest extends SpringBootBaseTest {
 
     @Autowired
     RequestShareArticleRepository requestShareArticleRepository;

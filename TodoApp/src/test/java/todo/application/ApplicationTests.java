@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import javax.persistence.EntityManager;
 
 @SpringBootTest
-class ApplicationTests {
+class ApplicationTests extends SpringBootBaseTest{
 
 	@Test
 	void contextLoads() {

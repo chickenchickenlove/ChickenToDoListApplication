@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
+import todo.application.SpringBootBaseTest;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
@@ -25,7 +26,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @Slf4j
-public class ArticleRepositoryTest {
+public class ArticleRepositoryTest extends SpringBootBaseTest {
 
 
     @Autowired

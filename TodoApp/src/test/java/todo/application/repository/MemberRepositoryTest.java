@@ -10,11 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.config.TransactionManagementConfigUtils;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.transaction.support.TransactionSynchronizationUtils;
+import todo.application.SpringBootBaseTest;
 import todo.application.TestUtilsConstant;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
@@ -37,7 +39,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @SpringBootTest
 @Slf4j
-class MemberRepositoryTest {
+@Rollback(value = false)
+class MemberRepositoryTest extends SpringBootBaseTest {
 
 
     @Autowired
