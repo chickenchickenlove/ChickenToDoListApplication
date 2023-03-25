@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import todo.application.SpringBootBaseTest;
 import todo.application.domain.Article;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 @Transactional
 @SpringBootTest
-class ArticleServiceTest {
+class ArticleServiceTest extends SpringBootBaseTest {
 
 
     @Autowired

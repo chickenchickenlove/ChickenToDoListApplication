@@ -80,11 +80,19 @@ public class Member extends BaseEntity{
                 !StringUtils.hasText(email);
     }
 
-    public boolean cannotJoinMember() {
-        return this.id != null;
+    public static boolean cannotJoinMember(Member member) {
+        return Objects.nonNull(member);
     }
     public boolean canJoinMember() {
         return this.id == null;
     }
+
+    public static boolean isValidEmail(String email) {
+        return StringUtils.hasText(email);
+    }
+    public static boolean isValidJoinId(String joinId) {
+        return StringUtils.hasText(joinId);
+    }
+
 
 }

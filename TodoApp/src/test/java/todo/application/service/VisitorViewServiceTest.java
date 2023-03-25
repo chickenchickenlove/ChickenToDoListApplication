@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import todo.application.SpringBootBaseTest;
 import todo.application.domain.VisitorView;
 import todo.application.repository.VisitorViewRepository;
 
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Slf4j
 @Transactional
-class VisitorViewServiceTest {
+class VisitorViewServiceTest extends SpringBootBaseTest {
 
 
     private static final int threadNumber = 10000;

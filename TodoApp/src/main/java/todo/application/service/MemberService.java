@@ -33,7 +33,7 @@ public class MemberService {
     public Long saveMember(String nickname, String joinId, String password, String email) {
 
         Member findMember = memberRepository.findMemberByJoinId(joinId);
-        if (findMember.cannotJoinMember()) {
+        if (Member.cannotJoinMember(findMember)) {
             throw new IllegalStateException("같은 UID로 이미 회원이 존재합니다.");
         }
 
@@ -86,7 +86,7 @@ public class MemberService {
     }
 
     public String findPassword(String email, String joinID) {
-        if (!StringUtils.hasText(email) || !StringUtils.hasText(joinID)) {
+        if (!Member.isValidEmail(email) || !Member.isValidJoinId(joinID)) {
             return null;
         }
 

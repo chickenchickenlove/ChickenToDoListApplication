@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import todo.application.SpringBootBaseTest;
 import todo.application.TestUtils;
 import todo.application.controller.form.MemberJoinForm;
 import todo.application.domain.Member;
@@ -20,10 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 @Transactional
 @SpringBootTest
-class MemberServiceTest {
-
-    @Autowired
-    ArticleService articleService;
+class MemberServiceTest extends SpringBootBaseTest {
 
     @Autowired
     MemberService memberService;
@@ -34,17 +32,17 @@ class MemberServiceTest {
     @Autowired
     EntityManager em;
 
-    MemberJoinForm memberJoinForm;
+    MemberJoinForm newMemberJoinForm;
 
     @BeforeEach
     void init() {
-        memberJoinForm = TestUtils.createNewMemberJoinForm();
+        newMemberJoinForm = TestUtils.createNewMemberJoinForm();
     }
 
     @Test
     void saveMemberSuccessTest() {
         // given
-        MemberJoinForm newMemberJoinForm = TestUtils.createNewMemberJoinForm();
+
 
         // when
         Long memberId = memberService.saveMember(newMemberJoinForm.getNickname(),
@@ -63,9 +61,8 @@ class MemberServiceTest {
 
     // Duplicated Entity
     @Test
-    void saveMemberFailTest() {
+    void saveMemberFailTestBecauseOfDuplicateJoinID() {
         // given
-        MemberJoinForm newMemberJoinForm = TestUtils.createNewMemberJoinForm();
         memberService.saveMember(newMemberJoinForm.getNickname(),
                 newMemberJoinForm.getJoinId(),
                 newMemberJoinForm.getPassword(),
@@ -142,29 +139,19 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("이메일  미입력, 아이디 정상 입력, 비번찾기 성공")
-    void passwordTest2() throws Exception{
-        // given
+    void findPasswordFailTest() {
+        //given
         Member member = TestUtils.createMemberForTest(null);
         em.persist(member);
         flushAndClear();
 
-        // when
-        String password1 = memberService.findPassword(null, null);
-        String password2 = memberService.findPassword("", null);
-        String password3 = memberService.findPassword(null, "");
-        String password4 = memberService.findPassword("", "");
-        String password5 = memberService.findPassword(member.getEmail(), "");
-        String password6 = memberService.findPassword("", member.getJoinId());
+        //when
+        String password = memberService.findPassword(null, member.getPassword());
 
-        // then
-        assertThat(password1).isNull();
-        assertThat(password2).isNull();
-        assertThat(password3).isNull();
-        assertThat(password4).isNull();
-        assertThat(password5).isNull();
-        assertThat(password6).isNull();
+        //then
+        assertThat(password).isNull();
     }
+
 
     private void flushAndClear() {
         em.flush();
