@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static javax.persistence.FetchType.*;
 
@@ -75,7 +76,34 @@ public class Article extends BaseEntity {
     }
 
 
-    public boolean canEditByThisMember(Member findMember) {
-        return findMember.getNickname().equals(this.writer);
+    private boolean isThisMemberOwnArticle(Member member) {
+        return member.getNickname().equals(this.writer);
+    }
+
+    public boolean canEditByThisMember(Member member) {
+        return isThisMemberOwnArticle(member);
+    }
+
+    public boolean canShareArticle(Long fromMemberId, Long toMemberId) {
+
+        MemberArticle fromMember = this.memberArticles
+                .stream()
+                .filter(memberArticle -> memberArticle.getMember().getId().equals(fromMemberId))
+                .findAny()
+                .orElseThrow();
+
+        if (!isThisMemberOwnArticle(fromMember.getMember())) {
+            return false;
+        }
+
+        return this.memberArticles
+                .stream()
+                .noneMatch(
+                        memberArticle -> memberArticle.getMember().getId().equals(toMemberId)
+                );
+    }
+
+    public MemberArticle shareToMember(Member toMember) {
+        return MemberArticle.shareMemberArticle(toMember, this);
     }
 }

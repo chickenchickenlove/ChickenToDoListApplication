@@ -2,17 +2,18 @@ package todo.application.domain;
 
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberArticle implements Comparable<MemberArticle>{
+public class MemberArticle{
 
     //== 테이블 매칭용 ==//
     @Id @GeneratedValue
@@ -28,12 +29,22 @@ public class MemberArticle implements Comparable<MemberArticle>{
     @JoinColumn(name = "article_id")
     private Article article;
 
+    private boolean memberOwn;
+
+
     public static MemberArticle createMemberArticle(Member member, Article article) {
-        return new MemberArticle(member, article);
+        return new MemberArticle(member, article, true);
     }
-    private MemberArticle(Member member, Article article) {
+
+    public static MemberArticle shareMemberArticle(Member member, Article article) {
+        return new MemberArticle(member, article, false);
+    }
+
+
+    private MemberArticle(Member member, Article article, boolean memberOwn) {
         this.member = member;
         this.article = article;
+        this.memberOwn = memberOwn;
 
         member.getArticles().add(this);
         article.getMemberArticles().add(this);
@@ -53,15 +64,9 @@ public class MemberArticle implements Comparable<MemberArticle>{
 
     }
 
-    // 비교용 Compare
-    @Override
-    public int compareTo(MemberArticle memberArticle) {
 
-        String myValue = this.getArticle().getDueDate().toString();
-        String comparableValue = memberArticle.getArticle().getDueDate().toString();
-
-        int result = myValue.compareTo(comparableValue);
-        return result;
+    public static Comparator<MemberArticle> comparator() {
+        return Comparator.comparing(o -> o.getArticle().getDueDate());
     }
 
 }

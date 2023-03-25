@@ -17,18 +17,26 @@ import todo.application.repository.MemberRepository;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 // TODO : 로그를 남기는 것보다 Exception을 만들어서 던지는 것이 좋을 듯. (뭔가 처리하지 않을 것이기 때문?)
 // 넘어오는 것을 받아서 응답 코드를 만들어주는 형태가 더 좋을 듯 하다.
 @Service
 @Transactional
-@RequiredArgsConstructor
 @Slf4j
 public class ArticleService {
 
     private final ArticleRepositoryImpl articleRepository;
     private final MemberRepository memberRepository;
     private final MemberArticleRepository memberArticleRepository;
+
+    public ArticleService(ArticleRepositoryImpl articleRepository,
+                          MemberRepository memberRepository,
+                          MemberArticleRepository memberArticleRepository) {
+        this.articleRepository = articleRepository;
+        this.memberRepository = memberRepository;
+        this.memberArticleRepository = memberArticleRepository;
+    }
 
     // 새로운 글 저장
     public Long saveNewArticle(String writeContents, String writeTitle, LocalDate dueDate, Long memberId) {
@@ -43,23 +51,15 @@ public class ArticleService {
     // Article 공유
     public void shareArticleWithOthers(Long toMemberId, Long articleId, Long fromMemberId) {
 
-        // Validation : 공유할 사람이 권한이 있는지 확인함.
-        if (!wasWrittenByThisMember(fromMemberId, articleId)) {
-            return;
-        }
-
-        // validation : 공유할 대상에게 동일한 글이 있는지 확인한다.
-        MemberArticle validation = articleRepository.findMemberArticleByMemberIdAndArticleId(toMemberId, articleId);
-
-        if (validation != null) {
+        Article findArticle = articleRepository.findArticleById(articleId);
+        if (!findArticle.canShareArticle(fromMemberId, toMemberId)) {
+            // TODO : 허용되지 않는 동작이기 때문에 에러로 처리 필요.
             log.info("동일한 글이 이미 해당 대상에게 있습니다. 따라서 공유가 안됩니다.");
             return;
         }
 
-        // 성공 로직
-        Member findMember = memberRepository.findMemberById(toMemberId);
-        Article findArticle = articleRepository.findArticleById(articleId);
-        MemberArticle memberArticle = MemberArticle.createMemberArticle(findMember, findArticle);
+        Member toMember = memberRepository.findMemberById(toMemberId);
+        findArticle.shareToMember(toMember);
     }
 
     /**
@@ -67,8 +67,9 @@ public class ArticleService {
      */
 
     public List<MemberArticle> findArticleByMemberId(Long memberId){
+        // TODO : 쿼리 수정 필요. (Sort 기능넣어서)
         List<MemberArticle> memberArticleList = articleRepository.findArticleByMemberId(memberId);
-        Collections.sort(memberArticleList);
+        memberArticleList.sort(MemberArticle.comparator());
         return memberArticleList;
     }
 

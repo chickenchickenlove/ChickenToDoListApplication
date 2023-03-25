@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import todo.application.SpringBootBaseTest;
+import todo.application.TestUtils;
 import todo.application.TestUtilsConstant;
 import todo.application.controller.form.EditArticleForm;
 import todo.application.domain.Article;
@@ -15,6 +16,7 @@ import todo.application.domain.ArticleStatus;
 import todo.application.domain.Member;
 import todo.application.domain.MemberArticle;
 import todo.application.repository.ArticleRepositoryImpl;
+import todo.application.repository.MemberArticleRepository;
 import todo.application.repository.MemberRepository;
 
 import javax.persistence.EntityManager;
@@ -36,6 +38,9 @@ class ArticleServiceTest extends SpringBootBaseTest {
 
     @Autowired
     ArticleRepositoryImpl articleRepository;
+
+    @Autowired
+    MemberArticleRepository memberArticleRepository;
 
     @Autowired
     EntityManager em;
@@ -103,6 +108,38 @@ class ArticleServiceTest extends SpringBootBaseTest {
         assertThat(findArticle.getStatus()).isEqualTo(TestUtilsConstant.UPDATE_ARTICLE_STATUS);
 
     }
+
+    @Test
+    void shareArticleSuccessTest(){
+
+        // given
+        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
+        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
+        Member fromMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
+                TestUtilsConstant.MEMBER_JOINID
+                ,TestUtilsConstant.PASSWORD,
+                TestUtilsConstant.EMAIL);
+        memberRepository.saveMember(fromMember);
+        Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), fromMember.getId());
+
+        flushAndClear();
+        Member toMember = TestUtils.createMemberForTest("share-");
+        memberRepository.saveMember(toMember);
+
+
+        // when
+        articleService.shareArticleWithOthers(toMember.getId(), articleId, fromMember.getId());
+
+        // then
+        flushAndClear();
+        Member findToMember = memberRepository.findMemberById(toMember.getId());
+        Member findFromMember = memberRepository.findMemberById(fromMember.getId());
+
+        assertThat(findToMember.getArticles().size()).isEqualTo(1);
+        assertThat(findFromMember.getArticles().size()).isEqualTo(1);
+    }
+
+
 
     void flushAndClear() {
         em.flush();

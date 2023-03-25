@@ -28,6 +28,12 @@ public class MemberArticleRepository {
     //DI
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
+    private final MemberArticleJpaRepository repository;
+
+    public Long save(MemberArticle memberArticle) {
+        return repository.save(memberArticle).getId();
+    }
+
 
     //== 단건 조회==//
     public MemberArticle findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(Long memberId, Long articleId) {
