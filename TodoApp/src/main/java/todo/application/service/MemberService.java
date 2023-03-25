@@ -11,10 +11,8 @@ import todo.application.domain.MemberArticle;
 import todo.application.repository.MemberRepository;
 import todo.application.repository.MemberSearch;
 import todo.application.repository.dto.MemberAdminDto;
-import todo.application.service.core.MemberServiceCore;
 import todo.application.service.input.MemberServiceInput;
 import todo.application.service.output.MemberServiceOutput;
-import todo.application.service.shell.MemberServiceShell;
 
 import javax.persistence.EntityManager;
 import java.util.*;
@@ -26,22 +24,23 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final EntityManager em;
-    private final MemberServiceShell memberServiceShell;
-    private final MemberServiceCore memberServiceCore;
 
-    public MemberService(MemberRepository memberRepository, EntityManager em, MemberServiceShell memberServiceShell, MemberServiceCore memberServiceCore) {
+    public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
-        this.em = em;
-        this.memberServiceShell = memberServiceShell;
-        this.memberServiceCore = memberServiceCore;
     }
 
     //== 회원 저장==//
     public Long saveMember(String nickname, String joinId, String password, String email) {
-        MemberServiceInput memberServiceInput = memberServiceShell.readyForSaveMember(nickname, joinId, password, email);
-        MemberServiceOutput memberServiceOutput = memberServiceCore.doCreateMember(memberServiceInput);
-        return memberServiceShell.wrapUpAfterSaveMember(memberServiceOutput);
+
+        Member findMember = memberRepository.findMemberByJoinId(joinId);
+        if (findMember.cannotJoinMember()) {
+            throw new IllegalStateException("같은 UID로 이미 회원이 존재합니다.");
+        }
+
+        Member newMember = Member.createNewMember(nickname, joinId, password, email);
+        memberRepository.saveMember(newMember);
+
+        return newMember.getId();
     }
 
     //== Batch 연산==//

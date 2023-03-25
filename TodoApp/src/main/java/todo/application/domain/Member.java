@@ -45,31 +45,32 @@ public class Member extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private MemberGrade memberGrade;
 
+
+    public Member(String nickname, String joinId, String password, String email, MemberGrade memberGrade) {
+        this.nickname = nickname;
+        this.joinId = joinId;
+        this.password = password;
+        this.email = email;
+        this.memberGrade = memberGrade;
+    }
+
     //== 생성 메서드==//
     public static Member createNewMember(String nickname, String joinId, String password, String email) {
 
         if (canCreate(nickname, joinId, password, email)) {
-            throw new IllegalStateException();
+            throw new IllegalArgumentException();
         }
 
-        Member member = new Member();
-        member.nickname = nickname;
-        member.joinId = joinId;
-        member.password = password;
-        member.email = email;
-        member.memberGrade = MemberGrade.NORMAL;
-        return member;
+        return new Member(nickname, joinId, password, email, MemberGrade.NORMAL);
     }
 
     public static Member createAdminMember(String nickname, String joinId, String password, String email) {
 
-        Member member = new Member();
-        member.nickname = nickname;
-        member.joinId = joinId;
-        member.password = password;
-        member.email = email;
-        member.memberGrade = MemberGrade.ADMIN;
-        return member;
+        if (canCreate(nickname, joinId, password, email)) {
+            throw new IllegalArgumentException();
+        }
+
+        return new Member(nickname, joinId, password, email, MemberGrade.ADMIN);
     }
 
     public static boolean canCreate(String nickname, String joinId, String password, String email) {
@@ -78,4 +79,12 @@ public class Member extends BaseEntity{
                 !StringUtils.hasText(password) ||
                 !StringUtils.hasText(email);
     }
+
+    public boolean cannotJoinMember() {
+        return this.id != null;
+    }
+    public boolean canJoinMember() {
+        return this.id == null;
+    }
+
 }
