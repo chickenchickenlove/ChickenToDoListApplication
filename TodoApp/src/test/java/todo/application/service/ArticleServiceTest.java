@@ -2,6 +2,7 @@ package todo.application.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,22 +46,30 @@ class ArticleServiceTest extends SpringBootBaseTest {
     @Autowired
     EntityManager em;
 
+
+    Member member;
+    String myTitle;
+    String myContents;
+
+    @BeforeEach
+    void setUpInSUT() {
+        member = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
+                TestUtilsConstant.MEMBER_JOINID
+                ,TestUtilsConstant.PASSWORD,
+                TestUtilsConstant.EMAIL);
+
+        myTitle = TestUtilsConstant.ARTICLE_TITLE;
+        myContents = TestUtilsConstant.ARTICLE_CONTENT;
+    }
     @Test
     void saveNewArticleSuccessTest() {
 
         // given
-        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
-        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
-        Member newMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
-                TestUtilsConstant.MEMBER_JOINID
-                ,TestUtilsConstant.PASSWORD,
-                TestUtilsConstant.EMAIL);
-        memberRepository.saveMember(newMember);
-
+        memberRepository.saveMember(member);
         flushAndClear();
 
         // when
-        Long articleId = articleService.saveNewArticle(myContents, myTitle, LocalDate.now(), newMember.getId());
+        Long articleId = articleService.saveNewArticle(myContents, myTitle, LocalDate.now(), member.getId());
 
         // then
         flushAndClear();
@@ -76,15 +85,8 @@ class ArticleServiceTest extends SpringBootBaseTest {
     void editArticleSuccessTest(){
 
         // given
-        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
-        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
-        Member newMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
-                TestUtilsConstant.MEMBER_JOINID
-                ,TestUtilsConstant.PASSWORD,
-                TestUtilsConstant.EMAIL);
-        memberRepository.saveMember(newMember);
-        Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), newMember.getId());
-
+        memberRepository.saveMember(member);
+        Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), member.getId());
         flushAndClear();
 
         EditArticleForm editArticleForm = new EditArticleForm(
@@ -93,9 +95,8 @@ class ArticleServiceTest extends SpringBootBaseTest {
                 TestUtilsConstant.UPDATE_ARTICLE_CONTENT,
                 TestUtilsConstant.UPDATE_ARTICLE_STATUS);
 
-
         // when
-        articleService.editNewArticle(articleId, editArticleForm, newMember.getId());
+        articleService.editNewArticle(articleId, editArticleForm, member.getId());
 
         // then
         flushAndClear();
@@ -113,12 +114,7 @@ class ArticleServiceTest extends SpringBootBaseTest {
     void shareArticleSuccessTest(){
 
         // given
-        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
-        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
-        Member fromMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
-                TestUtilsConstant.MEMBER_JOINID
-                ,TestUtilsConstant.PASSWORD,
-                TestUtilsConstant.EMAIL);
+        Member fromMember = member;
         memberRepository.saveMember(fromMember);
         Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), fromMember.getId());
 
@@ -141,26 +137,20 @@ class ArticleServiceTest extends SpringBootBaseTest {
 
     @Test
     void deleteArticleSuccessTest(){
-
         // given
-        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
-        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
-        Member fromMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
-                TestUtilsConstant.MEMBER_JOINID
-                ,TestUtilsConstant.PASSWORD,
-                TestUtilsConstant.EMAIL);
-        memberRepository.saveMember(fromMember);
-        Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), fromMember.getId());
+        memberRepository.saveMember(member);
+        Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), member.getId());
 
         flushAndClear();
 
         // when
-        articleService.deleteArticle(articleId, fromMember.getId());
+        articleService.deleteArticle(articleId, member.getId());
 
         // then
         flushAndClear();
         Article findArticle = articleRepository.findArticleById(articleId);
-        MemberArticle findMemberArticle = memberArticleRepository.findMemberArticleByMemberIdArticleId(fromMember.getId(), articleId);
+        MemberArticle findMemberArticle =
+                memberArticleRepository.findMemberArticleByMemberIdArticleId(member.getId(), articleId);
 
         assertThat(findArticle).isNull();
         assertThat(findMemberArticle).isNull();
