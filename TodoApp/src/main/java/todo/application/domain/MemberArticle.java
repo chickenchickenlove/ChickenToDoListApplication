@@ -69,4 +69,9 @@ public class MemberArticle{
         return Comparator.comparing(o -> o.getArticle().getDueDate());
     }
 
+    public static boolean canDeleteArticleByThisMember(MemberArticle memberArticle) {
+        return memberArticle != null;
+    }
+
+
 }

@@ -139,6 +139,32 @@ class ArticleServiceTest extends SpringBootBaseTest {
         assertThat(findFromMember.getArticles().size()).isEqualTo(1);
     }
 
+    @Test
+    void deleteArticleSuccessTest(){
+
+        // given
+        String myTitle = TestUtilsConstant.ARTICLE_TITLE;
+        String myContents = TestUtilsConstant.ARTICLE_CONTENT;
+        Member fromMember = Member.createNewMember(TestUtilsConstant.MEMBER_NICKNAME,
+                TestUtilsConstant.MEMBER_JOINID
+                ,TestUtilsConstant.PASSWORD,
+                TestUtilsConstant.EMAIL);
+        memberRepository.saveMember(fromMember);
+        Long articleId = articleService.saveNewArticle(myContents, myTitle,LocalDate.now(), fromMember.getId());
+
+        flushAndClear();
+
+        // when
+        articleService.deleteArticle(articleId, fromMember.getId());
+
+        // then
+        flushAndClear();
+        Article findArticle = articleRepository.findArticleById(articleId);
+        MemberArticle findMemberArticle = memberArticleRepository.findMemberArticleByMemberIdArticleId(fromMember.getId(), articleId);
+
+        assertThat(findArticle).isNull();
+        assertThat(findMemberArticle).isNull();
+    }
 
 
     void flushAndClear() {

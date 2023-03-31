@@ -67,7 +67,6 @@ public class ArticleService {
      */
 
     public List<MemberArticle> findArticleByMemberId(Long memberId){
-        // TODO : 쿼리 수정 필요. (Sort 기능넣어서)
         List<MemberArticle> memberArticleList = articleRepository.findArticleByMemberId(memberId);
         memberArticleList.sort(MemberArticle.comparator());
         return memberArticleList;
@@ -110,10 +109,13 @@ public class ArticleService {
 
     // 삭제 로직
     public void deleteArticle(Long articleId, Long memberId) {
-        if (!wasWrittenByThisMember(memberId,articleId)) {
-            log.info("적은 사람과 소유자가 달라 글을 수정할 수 없습니다. ");
+
+        MemberArticle findMemberArticle = memberArticleRepository.findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(memberId, articleId);
+
+        if (!MemberArticle.canDeleteArticleByThisMember(findMemberArticle)){
             return;
         }
+
         articleRepository.removeMemberArticle(articleId);
     }
 

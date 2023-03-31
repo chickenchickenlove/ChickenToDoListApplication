@@ -34,6 +34,9 @@ public class MemberArticleRepository {
         return repository.save(memberArticle).getId();
     }
 
+    public void removeByArticleId(Long articleId) {
+        repository.removeByArticleId(articleId);
+    }
 
     //== 단건 조회==//
     public MemberArticle findMemberArticleByMemberIdArticleIdAndMemberNickEqualArticleWriter(Long memberId, Long articleId) {

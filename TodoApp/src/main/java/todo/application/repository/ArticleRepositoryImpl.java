@@ -27,12 +27,19 @@ import static todo.application.domain.QMemberArticle.*;
 
 @Repository
 @Slf4j
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ArticleRepositoryImpl {
 
     private final JPAQueryFactory queryFactory;
     private final EntityManager em;
+    private final MemberArticleRepository memberArticleRepository;
+
+
+    public ArticleRepositoryImpl(JPAQueryFactory queryFactory, EntityManager em, MemberArticleRepository memberArticleRepository) {
+        this.queryFactory = queryFactory;
+        this.em = em;
+        this.memberArticleRepository = memberArticleRepository;
+    }
 
     //== 저장 로직 ==//
     public Long saveArticle(Article article) {
@@ -40,14 +47,13 @@ public class ArticleRepositoryImpl {
         return article.getId();
     }
 
-    //== 삭제 로직==//
     public void removeMemberArticle(Long articleId) {
+        memberArticleRepository.removeByArticleId(articleId);
+        removeMemberArticleByIdQuery(articleId);
+    }
 
-        // FK 가진 MemberArticle 먼저 삭제
-        queryFactory.delete(memberArticle)
-                .where(memberArticle.article.id.eq(articleId))
-                .execute();
-
+    //== 삭제 로직==//
+    public void removeMemberArticleByIdQuery(Long articleId) {
         // PK Article 삭제
         queryFactory.delete(article)
                 .where(article.id.eq(articleId))
